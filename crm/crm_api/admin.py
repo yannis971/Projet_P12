@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from . models import SalesContact, SupportContact, Client, Contract, Event
+from crm_api.models import SalesContact, SupportContact, Client, Contract, Event
 # Register your models here.
 
 admin.site.register(SalesContact)
