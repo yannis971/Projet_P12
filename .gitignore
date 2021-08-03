@@ -1,0 +1,4 @@
+.idea/
+env/
+crm/*/__pycache__/
+crm/*/*/__pycache__/
