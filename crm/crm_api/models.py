@@ -31,6 +31,9 @@ class Client(models.Model):
     date_updated = models.DateTimeField(auto_now=True)
     sales_contact = models.ForeignKey(to=SalesContact, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+
 
 class Contract(models.Model):
     sales_contact = models.ForeignKey(to=SalesContact, on_delete=models.CASCADE)
