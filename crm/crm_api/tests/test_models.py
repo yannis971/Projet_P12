@@ -1,27 +1,29 @@
 import pytest
-from datetime import datetime
+from datetime import timedelta
+from django.utils import timezone
 from django.test import TestCase
-from crm_api.models import Client, SalesContact, Contract
+from crm_api.models import Client, Contract, EventStatus, Event, SalesContact, StaffContact, SupportContact, User
 
-class SalesContactModelTest(TestCase):
-    def setUp(self):
-        self.username = "testsalescontact"
-        self.email = "testsalescontact@testbase.com"
+
+class UserModelTest:
+
+    def __init__(self):
+        self.username = "testuser"
+        self.email = "user@testbase.com"
         self.first_name = "Test"
-        self.last_name = "SalesContact"
+        self.last_name = "User"
         self.password = "test"
-
-        self.test_user = SalesContact.objects.create_user(
+        self.model = User
+        self.test_user = self.model.objects.create_user(
             username=self.username,
             email=self.email,
             first_name=self.first_name,
             last_name=self.last_name,
             password=self.password
         )
-        return self.test_user
 
     def test_create_user(self):
-        assert isinstance(self.test_user, SalesContact)
+        assert isinstance(self.test_user, self.model)
 
     def test_default_user_is_active(self):
         assert self.test_user.is_active
@@ -33,7 +35,7 @@ class SalesContactModelTest(TestCase):
         assert not self.test_user.is_superuser
 
     def test_get_full_name(self):
-        assert self.test_user.get_full_name() == 'Test SalesContact'
+        assert self.test_user.get_full_name() == f"{self.first_name} {self.last_name}"
 
     def test_get_short_name(self):
         assert self.test_user.get_short_name() == self.first_name
@@ -42,10 +44,74 @@ class SalesContactModelTest(TestCase):
         assert self.test_user.get_username() == self.username
 
     def test_user_count(self):
-        assert SalesContact.objects.count() == 1
+        assert self.model.objects.count() == 1
+
+
+class SalesContactModelTest(TestCase, UserModelTest):
+
+    def setUp(self):
+        self.username = "testsalescontact"
+        self.email = "testsalescontact@testbase.com"
+        self.first_name = "Test"
+        self.last_name = "SalesContact"
+        self.password = "test"
+
+        self.model = SalesContact
+
+        self.test_user = self.model.objects.create_user(
+            username=self.username,
+            email=self.email,
+            first_name=self.first_name,
+            last_name=self.last_name,
+            password=self.password
+        )
+        return self.test_user
+
+
+class SupportContactModelTest(TestCase, UserModelTest):
+
+    def setUp(self):
+        self.username = "testsupportcontact"
+        self.email = "testsupportcontact@testbase.com"
+        self.first_name = "Test"
+        self.last_name = "SupportContact"
+        self.password = "test"
+
+        self.model = SupportContact
+
+        self.test_user = self.model.objects.create_user(
+            username=self.username,
+            email=self.email,
+            first_name=self.first_name,
+            last_name=self.last_name,
+            password=self.password
+        )
+        return self.test_user
+
+
+class StaffContactModelTest(TestCase, UserModelTest):
+
+    def setUp(self):
+        self.username = "teststaffcontact"
+        self.email = "teststaffcontact@testbase.com"
+        self.first_name = "Test"
+        self.last_name = "StaffContact"
+        self.password = "test"
+
+        self.model = StaffContact
+
+        self.test_user = self.model.objects.create_user(
+            username=self.username,
+            email=self.email,
+            first_name=self.first_name,
+            last_name=self.last_name,
+            password=self.password
+        )
+        return self.test_user
 
 
 class ClientModelTest(TestCase):
+
     def setUp(self):
         self.first_name = "Test"
         self.last_name = "Client"
@@ -77,10 +143,11 @@ class ClientModelTest(TestCase):
 
 
 class ContractModelTest(TestCase):
+
     def setUp(self):
         self.status = True
         self.amount = 15786.25
-        self.payment_due = datetime(2024, 12, 31, 23, 59, 59, 0)
+        self.payment_due = timezone.now() + timedelta(days=30)
         self.client = ClientModelTest().setUp()
         self.sales_contact = self.client.sales_contact
         self.test_contract = Contract.objects.create(
@@ -96,3 +163,44 @@ class ContractModelTest(TestCase):
 
     def test_contract_count(self):
         assert Contract.objects.count() == 1
+
+
+class EventStatusModelTest(TestCase):
+
+    def setUp(self):
+        self.test_event_status = []
+        for status in EventStatus.Status:
+            self.test_event_status.append(EventStatus.objects.create(status=status))
+        return self.test_event_status
+
+    def test_create_event_status(self):
+        for item in self.test_event_status:
+            assert isinstance(item, EventStatus)
+
+    def test_event_status_count(self):
+        assert EventStatus.objects.count() == len(EventStatus.Status)
+
+
+class EventModelTest(TestCase):
+
+    def setUp(self):
+        self.client = ClientModelTest().setUp()
+        self.support_contact = SupportContactModelTest().setUp()
+        self.event_status = EventStatusModelTest().setUp()[0]
+        self.attendees = 100
+        self.event_date = timezone.now() + timedelta(days=15)
+        self.notes = "Test Event Model"
+        self.test_event = Event.objects.create(
+            client=self.client,
+            support_contact=self.support_contact,
+            event_status=self.event_status,
+            attendees=self.attendees,
+            event_date=self.event_date,
+            notes=self.notes
+        )
+
+    def test_create_event(self):
+        assert isinstance(self.test_event, Event)
+
+    def test_event_count(self):
+        assert Event.objects.count() == 1
