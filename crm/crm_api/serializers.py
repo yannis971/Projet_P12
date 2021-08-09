@@ -36,22 +36,6 @@ class ClientSerializer(serializers.ModelSerializer):
                 },
             }
 
-    """
-    def validate(self, data):
-        try:
-            first_name = self._kwargs['data']['first_name']
-            last_name = self._kwargs['data']['last_name']
-            email = self._kwargs['data']['email']
-            sales_contact_id = self._kwargs['data']['sales_contact_id']
-        except KeyError:
-            message = "first_name, last_name, email and sales_contact_id are mandatory fields"
-            raise serializers.ValidationError(message)
-        else:
-            email_validator = EmailValidator()
-            email_validator(email)
-        return data
-    """
-
 
 class ContractSerializer(serializers.ModelSerializer):
     """
@@ -109,11 +93,3 @@ class EventSerializer(serializers.ModelSerializer):
                     'validators': [MaxLengthValidator, ]
                 },
             }
-
-    def validate(self, data):
-        if all((field in self._kwargs['data'] for field in self.fields)):
-            pass
-        else:
-            message = "client_id, support_contact_id, event_status_id, attendees, event_date, notes are mandatory fields"
-            raise serializers.ValidationError(message)
-        return data
