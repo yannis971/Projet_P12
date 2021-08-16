@@ -31,7 +31,7 @@ class StaffContact(User):
 class SupportContact(User):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     team = models.OneToOneField(Group, on_delete=models.CASCADE, to_field=Group.name, limit_choices_to={'name': "SUPPORT"},)
-    
+
     class Meta:
         db_table = "SupportContacts"
 
