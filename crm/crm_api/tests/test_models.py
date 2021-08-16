@@ -1,4 +1,4 @@
-import pytest
+import mock
 from datetime import timedelta
 from django.utils import timezone
 from django.test import TestCase
@@ -113,21 +113,14 @@ class StaffContactModelTest(TestCase, UserModelTest):
 class ClientModelTest(TestCase):
 
     def setUp(self):
-        self.first_name = "Test"
-        self.last_name = "Client"
-        self.email = "testclient@testbase.com"
-        self.phone = ""
-        self.mobile = ""
-        self.sales_contact = SalesContactModelTest().setUp()
-        self.test_client = Client.objects.create(
-            first_name=self.first_name,
-            last_name=self.last_name,
-            email=self.email,
-            phone=self.phone,
-            mobile=self.mobile,
-            sales_contact=self.sales_contact
-        )
-        return self.test_client
+        sales_contact = mock.Mock(spec=SalesContact)
+        sales_contact._state = mock.Mock()
+        sales_contact.username = "test"
+        self.test_client = Client()
+        self.test_client.first_name = "Test"
+        self.test_client.last_name = "Client"
+        self.test_client.email = "testclient@testbase.com"
+        self.test_client.sales_contact = sales_contact
 
     def test_create_client(self):
         assert isinstance(self.test_client, Client)
@@ -136,33 +129,27 @@ class ClientModelTest(TestCase):
         assert isinstance(self.test_client.sales_contact, SalesContact)
 
     def test_client_str(self):
-        assert self.test_client.__str__() == f"{self.first_name} {self.last_name}"
-
-    def test_client_count(self):
-        assert Client.objects.count() == 1
+        assert self.test_client.__str__() == "Test Client"
 
 
 class ContractModelTest(TestCase):
 
     def setUp(self):
-        self.status = True
-        self.amount = 15786.25
-        self.payment_due = timezone.now() + timedelta(days=30)
-        self.client = ClientModelTest().setUp()
-        self.sales_contact = self.client.sales_contact
-        self.test_contract = Contract.objects.create(
-            sales_contact=self.sales_contact,
-            client=self.client,
-            status=self.status,
-            amount=self.amount,
-            payment_due=self.payment_due
-        )
+        client = mock.Mock(spec=Client)
+        client._state = mock.Mock()
+        client.first_name = "test"
+        sales_contact = mock.Mock(spec=SalesContact)
+        sales_contact._state = mock.Mock()
+        sales_contact.username = "salescontact"
+        self.test_contract = Contract()
+        self.test_contract.status = True
+        self.test_contract.amount = 15786.25
+        self.test_contract.payment_due = timezone.now() + timedelta(days=30)
+        self.test_contract.client = client
+        # self.test_contract.sales_contact = client.sales_contact
 
     def test_create_contract(self):
         assert isinstance(self.test_contract, Contract)
-
-    def test_contract_count(self):
-        assert Contract.objects.count() == 1
 
 
 class EventStatusModelTest(TestCase):
@@ -184,23 +171,25 @@ class EventStatusModelTest(TestCase):
 class EventModelTest(TestCase):
 
     def setUp(self):
-        self.client = ClientModelTest().setUp()
-        self.support_contact = SupportContactModelTest().setUp()
-        self.event_status = EventStatusModelTest().setUp()[0]
-        self.attendees = 100
-        self.event_date = timezone.now() + timedelta(days=15)
-        self.notes = "Test Event Model"
-        self.test_event = Event.objects.create(
-            client=self.client,
-            support_contact=self.support_contact,
-            event_status=self.event_status,
-            attendees=self.attendees,
-            event_date=self.event_date,
-            notes=self.notes
-        )
+        self.test_event = Event()
+        self.test_event.attendees = 100
+        self.test_event.event_date = timezone.now() + timedelta(days=15)
+        self.test_event.notes = "Test Event Model"
+        client = mock.Mock(spec=Client)
+        client._state = mock.Mock()
+        client.first_name = "test"
+        self.test_event.client = client
+        """
+        support_contact = mock.Mock(spec=SupportContact)
+        support_contact._state = mock.Mock()
+        support_contact.username = "supportcontact"
+        self.test_event.support_contact = support_contact
+        event_status = mock.Mock(spec=EventStatus)
+        event_status._state = mock.Mock()
+        self.test_event.event_status = event_status
+        """
 
     def test_create_event(self):
         assert isinstance(self.test_event, Event)
 
-    def test_event_count(self):
-        assert Event.objects.count() == 1
+
