@@ -1,22 +1,37 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.utils.translation import gettext_lazy as _
 from datetime import datetime
 
 # Create your models here.
 
+from django.contrib.auth.models import AbstractUser
+
+
+class User(AbstractUser):
+    pass
+
 
 class SalesContact(User):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    team = models.OneToOneField(Group, on_delete=models.CASCADE, to_field=Group.name, limit_choices_to={'name': "SALES"},)
+
     class Meta:
         db_table = "SalesContacts"
 
 
 class StaffContact(User):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    team = models.OneToOneField(Group, on_delete=models.CASCADE, to_field=Group.name, limit_choices_to={'name': "STAFF"},)
+
     class Meta:
         db_table = "StaffContacts"
 
 
 class SupportContact(User):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    team = models.OneToOneField(Group, on_delete=models.CASCADE, to_field=Group.name, limit_choices_to={'name': "SUPPORT"},)
+
     class Meta:
         db_table = "SupportContacts"
 
