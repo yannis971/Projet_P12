@@ -8,29 +8,25 @@ from datetime import datetime
 from django.contrib.auth.models import AbstractUser
 
 
-class User(AbstractUser):
-    pass
-
-
-class SalesContact(User):
+class SalesContact(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    team = models.OneToOneField(Group, on_delete=models.CASCADE, to_field=Group.name, limit_choices_to={'name': "SALES"},)
+    group = models.OneToOneField(Group, on_delete=models.CASCADE)
 
     class Meta:
         db_table = "SalesContacts"
 
 
-class StaffContact(User):
+class StaffContact(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    team = models.OneToOneField(Group, on_delete=models.CASCADE, to_field=Group.name, limit_choices_to={'name': "STAFF"},)
+    group = models.OneToOneField(Group, on_delete=models.CASCADE)
 
     class Meta:
         db_table = "StaffContacts"
 
 
-class SupportContact(User):
+class SupportContact(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    team = models.OneToOneField(Group, on_delete=models.CASCADE, to_field=Group.name, limit_choices_to={'name': "SUPPORT"},)
+    group = models.OneToOneField(Group, on_delete=models.CASCADE)
 
     class Meta:
         db_table = "SupportContacts"
@@ -42,9 +38,10 @@ class Client(models.Model):
     email = models.EmailField(max_length=100, unique=True)
     phone = models.CharField(max_length=20, blank=True)
     mobile = models.CharField(max_length=20, blank=True)
+    sales_contact = models.ForeignKey(to=SalesContact, on_delete=models.CASCADE)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
-    sales_contact = models.ForeignKey(to=SalesContact, on_delete=models.CASCADE)
+
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
