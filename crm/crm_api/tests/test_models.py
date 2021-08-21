@@ -2,112 +2,47 @@ import mock
 from datetime import timedelta
 from django.utils import timezone
 from django.test import TestCase
-from crm_api.models import Client, Contract, EventStatus, Event, SalesContact, StaffContact, SupportContact, User
+from django.contrib.auth.models import User
+from crm_api.models import Client, Contract, EventStatus, Event, SalesContact, StaffContact, SupportContact
 
 
-class UserModelTest:
-
-    def __init__(self):
-        self.username = "testuser"
-        self.email = "user@testbase.com"
-        self.first_name = "Test"
-        self.last_name = "User"
-        self.password = "test"
-        self.model = User
-        self.test_user = self.model.objects.create_user(
-            username=self.username,
-            email=self.email,
-            first_name=self.first_name,
-            last_name=self.last_name,
-            password=self.password
-        )
-
-    def test_create_user(self):
-        assert isinstance(self.test_user, self.model)
-
-    def test_default_user_is_active(self):
-        assert self.test_user.is_active
-
-    def test_default_user_is_staff(self):
-        assert not self.test_user.is_staff
-
-    def test_default_user_is_superuser(self):
-        assert not self.test_user.is_superuser
-
-    def test_get_full_name(self):
-        assert self.test_user.get_full_name() == f"{self.first_name} {self.last_name}"
-
-    def test_get_short_name(self):
-        assert self.test_user.get_short_name() == self.first_name
-
-    def test_get_username(self):
-        assert self.test_user.get_username() == self.username
-
-    def test_user_count(self):
-        assert self.model.objects.count() == 1
-
-
-class SalesContactModelTest(TestCase, UserModelTest):
+class SalesContactModelTest(TestCase):
 
     def setUp(self):
-        self.username = "testsalescontact"
-        self.email = "testsalescontact@testbase.com"
-        self.first_name = "Test"
-        self.last_name = "SalesContact"
-        self.password = "test"
+        self.user = User(username="TESTSALESCONTACT", password="test")
+        self.contact = SalesContact(user=self.user)
 
-        self.model = SalesContact
+    def test_create(self):
+        assert isinstance(self.contact, SalesContact)
 
-        self.test_user = self.model.objects.create_user(
-            username=self.username,
-            email=self.email,
-            first_name=self.first_name,
-            last_name=self.last_name,
-            password=self.password
-        )
-        return self.test_user
+    def test_str(self):
+        assert self.contact.__str__() == "TESTSALESCONTACT"
 
 
-class SupportContactModelTest(TestCase, UserModelTest):
+class SupportContactModelTest(TestCase):
 
     def setUp(self):
-        self.username = "testsupportcontact"
-        self.email = "testsupportcontact@testbase.com"
-        self.first_name = "Test"
-        self.last_name = "SupportContact"
-        self.password = "test"
+        self.user = User(username="TESTSUPPORTCONTACT", password="test")
+        self.contact = SupportContact(user=self.user)
 
-        self.model = SupportContact
+    def test_create(self):
+        assert isinstance(self.contact, SupportContact)
 
-        self.test_user = self.model.objects.create_user(
-            username=self.username,
-            email=self.email,
-            first_name=self.first_name,
-            last_name=self.last_name,
-            password=self.password
-        )
-        return self.test_user
+    def test_str(self):
+        assert self.contact.__str__() == "TESTSUPPORTCONTACT"
 
 
-class StaffContactModelTest(TestCase, UserModelTest):
+class StaffContactModelTest(TestCase):
 
     def setUp(self):
-        self.username = "teststaffcontact"
-        self.email = "teststaffcontact@testbase.com"
-        self.first_name = "Test"
-        self.last_name = "StaffContact"
-        self.password = "test"
+        self.user = User(username="TESTSTAFFCONTACT", password="test")
+        self.contact = StaffContact(user=self.user)
 
-        self.model = StaffContact
+    def test_create(self):
+        assert isinstance(self.contact, StaffContact)
 
-        self.test_user = self.model.objects.create_user(
-            username=self.username,
-            email=self.email,
-            first_name=self.first_name,
-            last_name=self.last_name,
-            password=self.password
-        )
-        return self.test_user
+    def test_str(self):
+        assert self.contact.__str__() == "TESTSTAFFCONTACT"
 
 
 class ClientModelTest(TestCase):

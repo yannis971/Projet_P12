@@ -3,36 +3,76 @@ from django.contrib.auth.models import User, Group
 from django.utils.translation import gettext_lazy as _
 from datetime import datetime
 
-# Create your models here.
-
-from django.contrib.auth.models import AbstractUser
-
 
 class SalesContact(models.Model):
+    """
+    SalesContact profile
+    """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    group = models.OneToOneField(Group, on_delete=models.CASCADE)
 
     class Meta:
         db_table = "SalesContacts"
 
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        """
+        Overrides save method to save user instance and set user in SALES Group
+        """
+        self.user.save(force_insert=False, force_update=False, using=None, update_fields=None)
+        self.user.groups.add(Group.objects.get(name="SALES"))
+        super().save(force_insert=False, force_update=False, using=None, update_fields=None)
+
+    def __str__(self):
+        return self.user.get_username()
+
 
 class StaffContact(models.Model):
+    """
+    StaffContact profile
+    """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    group = models.OneToOneField(Group, on_delete=models.CASCADE)
 
     class Meta:
         db_table = "StaffContacts"
 
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        """
+        Overrides save method to save user instance and set user in STAFF Group
+        """
+        self.user.save(force_insert=False, force_update=False, using=None, update_fields=None)
+        self.user.groups.add(Group.objects.get(name="STAFF"))
+        super().save(force_insert=False, force_update=False, using=None, update_fields=None)
+
+    def __str__(self):
+        return self.user.get_username()
+
 
 class SupportContact(models.Model):
+    """
+    SupportContact profile
+    """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    group = models.OneToOneField(Group, on_delete=models.CASCADE)
 
     class Meta:
         db_table = "SupportContacts"
 
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        """
+        Overrides save method to save user instance and set user in SUPPORT Group
+        """
+        self.user.save(force_insert=False, force_update=False, using=None, update_fields=None)
+        self.user.groups.add(Group.objects.get(name="SUPPORT"))
+        super().save(force_insert=False, force_update=False, using=None, update_fields=None)
+
+    def __str__(self):
+        return self.user.get_username()
+
 
 class Client(models.Model):
+    """
+    Client Entity
+    """
     first_name = models.CharField(max_length=25)
     last_name = models.CharField(max_length=25)
     email = models.EmailField(max_length=100, unique=True)
@@ -42,12 +82,14 @@ class Client(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
 
-
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
 
 class Contract(models.Model):
+    """
+    Contrat Entity
+    """
     sales_contact = models.ForeignKey(to=SalesContact, on_delete=models.CASCADE)
     client = models.ForeignKey(to=Client, on_delete=models.CASCADE)
     date_created = models.DateTimeField(auto_now_add=True)
@@ -58,6 +100,9 @@ class Contract(models.Model):
 
 
 class EventStatus(models.Model):
+    """
+    EventStatus Entity
+    """
     class Status(models.TextChoices):
         CREATED = 'C', _('CREATED')
         ENDED = 'E', _('ENDED')
@@ -66,6 +111,9 @@ class EventStatus(models.Model):
 
 
 class Event(models.Model):
+    """
+    Event Entity
+    """
     client = models.ForeignKey(to=Client, on_delete=models.CASCADE)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
