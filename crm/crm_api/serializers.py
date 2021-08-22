@@ -1,8 +1,6 @@
-from django.conf import settings
-from django.core.validators import DecimalValidator, EmailValidator, integer_validator, MaxLengthValidator, ProhibitNullCharactersValidator
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from crm_api.models import SalesContact, SupportContact, Client, Contract, Event
+from crm_api.models import SalesContact, SupportContact, StaffContact, Client, Contract, Event
 
 
 class ClientSerializer(serializers.ModelSerializer):
@@ -48,3 +46,33 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username', 'password']
+
+
+class SalesContactSerializer(serializers.ModelSerializer):
+    user_id = serializers.ReadOnlyField(source='user.id')
+    username = serializers.ReadOnlyField(source='user.username')
+    password = serializers.ReadOnlyField(source='user.password')
+
+    class Meta:
+        model = SalesContact
+        fields = ['user_id', 'username', 'password']
+
+
+class SupportContactSerializer(serializers.ModelSerializer):
+    user_id = serializers.ReadOnlyField(source='user.id')
+    username = serializers.ReadOnlyField(source='user.username')
+    password = serializers.ReadOnlyField(source='user.password')
+
+    class Meta:
+        model = SupportContact
+        fields = ['user_id', 'username', 'password']
+
+
+class StaffContactSerializer(serializers.ModelSerializer):
+    user_id = serializers.ReadOnlyField(source='user.id')
+    username = serializers.ReadOnlyField(source='user.username')
+    password = serializers.ReadOnlyField(source='user.password')
+
+    class Meta:
+        model = StaffContact
+        fields = ['user_id', 'username', 'password']
