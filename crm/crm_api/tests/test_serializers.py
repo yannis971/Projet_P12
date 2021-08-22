@@ -3,8 +3,8 @@ import factory
 from datetime import timedelta
 from django.utils import timezone
 
-from crm_api.serializers import ClientSerializer, ContractSerializer, EventSerializer
-from crm_api.factories import SalesContactFactory, ClientFactory, ContractFactory, EventFactory
+from crm_api.serializers import ClientSerializer, ContractSerializer, EventSerializer, UserSerializer, SalesContactSerializer, SupportContactSerializer, StaffContactSerializer
+from crm_api.factories import UserFactory, SalesContactFactory, SupportContactFactory, StaffContactFactory, ClientFactory, ContractFactory, EventFactory
 
 
 class TestClientSerializer:
@@ -225,3 +225,95 @@ class TestEventSerializer:
 
         assert serializer.is_valid() == False
         assert serializer.errors['notes'][0].code == 'max_length'
+
+
+class TestUserSerializer:
+
+    @pytest.mark.unit
+    @pytest.mark.django_db
+    def test_serialize_model(self):
+        user = UserFactory.build()
+        serializer = UserSerializer(user)
+
+        assert serializer.data
+
+    @pytest.mark.unit
+    @pytest.mark.django_db
+    def test_serialized_data(self):
+        valid_serialized_data = factory.build(
+            dict,
+            FACTORY_CLASS=UserFactory
+        )
+        serializer = UserSerializer(data=valid_serialized_data)
+
+        assert serializer.is_valid()
+        assert serializer.errors == {}
+
+
+class TestSalesContactSerializer:
+
+    @pytest.mark.unit
+    @pytest.mark.django_db
+    def test_serialize_model(self):
+        sales_contact = SalesContactFactory.build()
+        serializer = SalesContactSerializer(sales_contact)
+
+        assert serializer.data
+
+    @pytest.mark.unit
+    @pytest.mark.django_db
+    def test_serialized_data(self):
+        valid_serialized_data = factory.build(
+            dict,
+            FACTORY_CLASS=SalesContactFactory
+        )
+        serializer = SalesContactSerializer(data=valid_serialized_data)
+
+        assert serializer.is_valid()
+        assert serializer.errors == {}
+
+
+class TestSupportContactSerializer:
+
+    @pytest.mark.unit
+    @pytest.mark.django_db
+    def test_serialize_model(self):
+        support_contact = SupportContactFactory.build()
+        serializer = SupportContactSerializer(support_contact)
+
+        assert serializer.data
+
+    @pytest.mark.unit
+    @pytest.mark.django_db
+    def test_serialized_data(self):
+        valid_serialized_data = factory.build(
+            dict,
+            FACTORY_CLASS=SupportContactFactory
+        )
+        serializer = SupportContactSerializer(data=valid_serialized_data)
+
+        assert serializer.is_valid()
+        assert serializer.errors == {}
+
+
+class TestStaffContactSerializer:
+
+    @pytest.mark.unit
+    @pytest.mark.django_db
+    def test_serialize_model(self):
+        staff_contact = StaffContactFactory.build()
+        serializer = StaffContactSerializer(staff_contact)
+
+        assert serializer.data
+
+    @pytest.mark.unit
+    @pytest.mark.django_db
+    def test_serialized_data(self):
+        valid_serialized_data = factory.build(
+            dict,
+            FACTORY_CLASS=StaffContactFactory
+        )
+        serializer = StaffContactSerializer(data=valid_serialized_data)
+
+        assert serializer.is_valid()
+        assert serializer.errors == {}
