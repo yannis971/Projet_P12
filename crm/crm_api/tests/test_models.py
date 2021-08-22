@@ -1,4 +1,5 @@
 import mock
+import pytest
 from datetime import timedelta
 from django.utils import timezone
 from django.test import TestCase
@@ -68,21 +69,26 @@ class ClientModelTest(TestCase):
 
 
 class ContractModelTest(TestCase):
-
+    @pytest.mark.unit
+    @pytest.mark.django_db
     def setUp(self):
-        client = mock.Mock(spec=Client)
-        client._state = mock.Mock()
-        client.first_name = "test"
         sales_contact = mock.Mock(spec=SalesContact)
-        sales_contact._state = mock.Mock()
         sales_contact.username = "salescontact"
+        sales_contact._state = mock.Mock(name="sales_contact")
+        client = mock.Mock(spec=Client)
+        client._state = mock.Mock(name="client")
+        client.first_name = "test"
+        client.sales_contact = sales_contact
         self.test_contract = Contract()
         self.test_contract.status = True
         self.test_contract.amount = 15786.25
         self.test_contract.payment_due = timezone.now() + timedelta(days=30)
         self.test_contract.client = client
-        # self.test_contract.sales_contact = client.sales_contact
+        # self.test_contract.sales_contact = sales_contact
 
+
+    @pytest.mark.unit
+    @pytest.mark.django_db
     def test_create_contract(self):
         assert isinstance(self.test_contract, Contract)
 
@@ -106,13 +112,13 @@ class EventStatusModelTest(TestCase):
 class EventModelTest(TestCase):
 
     def setUp(self):
+        client = mock.Mock(spec=Client)
+        client._state = mock.Mock(name="client")
+        client.first_name = "test"
         self.test_event = Event()
         self.test_event.attendees = 100
         self.test_event.event_date = timezone.now() + timedelta(days=15)
         self.test_event.notes = "Test Event Model"
-        client = mock.Mock(spec=Client)
-        client._state = mock.Mock()
-        client.first_name = "test"
         self.test_event.client = client
         """
         support_contact = mock.Mock(spec=SupportContact)
@@ -126,5 +132,3 @@ class EventModelTest(TestCase):
 
     def test_create_event(self):
         assert isinstance(self.test_event, Event)
-
-

@@ -98,6 +98,9 @@ class Contract(models.Model):
     amount = models.DecimalField(max_digits=9, decimal_places=2)
     payment_due = models.DateTimeField(default=datetime.now())
 
+    def __str__(self):
+        return f"{self.client} | {self.sales_contact} | {self.status} | {self.amount} | {self.payment_due}"
+
 
 class EventStatus(models.Model):
     """
@@ -108,6 +111,9 @@ class EventStatus(models.Model):
         ENDED = 'E', _('ENDED')
         IN_PROGRESS = 'P', _('IN PROGRESS')
     status = models.CharField(max_length=1, choices=Status.choices, default=Status.CREATED)
+
+    def __str__(self):
+        return self.get_status_display()
 
 
 class Event(models.Model):
@@ -122,3 +128,6 @@ class Event(models.Model):
     attendees = models.IntegerField()
     event_date = models.DateTimeField(default=datetime.now())
     notes = models.CharField(max_length=2048, blank=True)
+
+    def __str__(self):
+        return f"{self.client} | {self.support_contact} | {self.event_status} | {self.attendees} | {self.event_date}"
