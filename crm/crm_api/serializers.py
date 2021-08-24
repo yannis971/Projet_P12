@@ -1,8 +1,6 @@
-from django.conf import settings
-from django.core.validators import DecimalValidator, EmailValidator, integer_validator, MaxLengthValidator, ProhibitNullCharactersValidator
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from crm_api.models import SalesContact, SupportContact, Client, Contract, Event
+from crm_api.models import SalesContact, SupportContact, StaffContact, Client, Contract, Event
 
 
 class ClientSerializer(serializers.ModelSerializer):

@@ -1,133 +1,62 @@
+import mock
 import pytest
 from datetime import timedelta
 from django.utils import timezone
 from django.test import TestCase
-from crm_api.models import Client, Contract, EventStatus, Event, SalesContact, StaffContact, SupportContact, User
+from django.contrib.auth.models import User
+from crm_api.models import Client, Contract, EventStatus, Event, SalesContact, StaffContact, SupportContact
 
 
-class UserModelTest:
-
-    def __init__(self):
-        self.username = "testuser"
-        self.email = "user@testbase.com"
-        self.first_name = "Test"
-        self.last_name = "User"
-        self.password = "test"
-        self.model = User
-        self.test_user = self.model.objects.create_user(
-            username=self.username,
-            email=self.email,
-            first_name=self.first_name,
-            last_name=self.last_name,
-            password=self.password
-        )
-
-    def test_create_user(self):
-        assert isinstance(self.test_user, self.model)
-
-    def test_default_user_is_active(self):
-        assert self.test_user.is_active
-
-    def test_default_user_is_staff(self):
-        assert not self.test_user.is_staff
-
-    def test_default_user_is_superuser(self):
-        assert not self.test_user.is_superuser
-
-    def test_get_full_name(self):
-        assert self.test_user.get_full_name() == f"{self.first_name} {self.last_name}"
-
-    def test_get_short_name(self):
-        assert self.test_user.get_short_name() == self.first_name
-
-    def test_get_username(self):
-        assert self.test_user.get_username() == self.username
-
-    def test_user_count(self):
-        assert self.model.objects.count() == 1
-
-
-class SalesContactModelTest(TestCase, UserModelTest):
+class SalesContactModelTest(TestCase):
 
     def setUp(self):
-        self.username = "testsalescontact"
-        self.email = "testsalescontact@testbase.com"
-        self.first_name = "Test"
-        self.last_name = "SalesContact"
-        self.password = "test"
+        self.user = User(username="TESTSALESCONTACT", password="test")
+        self.contact = SalesContact(user=self.user)
 
-        self.model = SalesContact
+    def test_create(self):
+        assert isinstance(self.contact, SalesContact)
 
-        self.test_user = self.model.objects.create_user(
-            username=self.username,
-            email=self.email,
-            first_name=self.first_name,
-            last_name=self.last_name,
-            password=self.password
-        )
-        return self.test_user
+    def test_str(self):
+        assert self.contact.__str__() == "TESTSALESCONTACT"
 
 
-class SupportContactModelTest(TestCase, UserModelTest):
+class SupportContactModelTest(TestCase):
 
     def setUp(self):
-        self.username = "testsupportcontact"
-        self.email = "testsupportcontact@testbase.com"
-        self.first_name = "Test"
-        self.last_name = "SupportContact"
-        self.password = "test"
+        self.user = User(username="TESTSUPPORTCONTACT", password="test")
+        self.contact = SupportContact(user=self.user)
 
-        self.model = SupportContact
+    def test_create(self):
+        assert isinstance(self.contact, SupportContact)
 
-        self.test_user = self.model.objects.create_user(
-            username=self.username,
-            email=self.email,
-            first_name=self.first_name,
-            last_name=self.last_name,
-            password=self.password
-        )
-        return self.test_user
+    def test_str(self):
+        assert self.contact.__str__() == "TESTSUPPORTCONTACT"
 
 
-class StaffContactModelTest(TestCase, UserModelTest):
+class StaffContactModelTest(TestCase):
 
     def setUp(self):
-        self.username = "teststaffcontact"
-        self.email = "teststaffcontact@testbase.com"
-        self.first_name = "Test"
-        self.last_name = "StaffContact"
-        self.password = "test"
+        self.user = User(username="TESTSTAFFCONTACT", password="test")
+        self.contact = StaffContact(user=self.user)
 
-        self.model = StaffContact
+    def test_create(self):
+        assert isinstance(self.contact, StaffContact)
 
-        self.test_user = self.model.objects.create_user(
-            username=self.username,
-            email=self.email,
-            first_name=self.first_name,
-            last_name=self.last_name,
-            password=self.password
-        )
-        return self.test_user
+    def test_str(self):
+        assert self.contact.__str__() == "TESTSTAFFCONTACT"
 
 
 class ClientModelTest(TestCase):
 
     def setUp(self):
-        self.first_name = "Test"
-        self.last_name = "Client"
-        self.email = "testclient@testbase.com"
-        self.phone = ""
-        self.mobile = ""
-        self.sales_contact = SalesContactModelTest().setUp()
-        self.test_client = Client.objects.create(
-            first_name=self.first_name,
-            last_name=self.last_name,
-            email=self.email,
-            phone=self.phone,
-            mobile=self.mobile,
-            sales_contact=self.sales_contact
-        )
-        return self.test_client
+        sales_contact = mock.Mock(spec=SalesContact)
+        sales_contact._state = mock.Mock()
+        sales_contact.username = "test"
+        self.test_client = Client()
+        self.test_client.first_name = "Test"
+        self.test_client.last_name = "Client"
+        self.test_client.email = "testclient@testbase.com"
+        self.test_client.sales_contact = sales_contact
 
     def test_create_client(self):
         assert isinstance(self.test_client, Client)
@@ -136,33 +65,32 @@ class ClientModelTest(TestCase):
         assert isinstance(self.test_client.sales_contact, SalesContact)
 
     def test_client_str(self):
-        assert self.test_client.__str__() == f"{self.first_name} {self.last_name}"
-
-    def test_client_count(self):
-        assert Client.objects.count() == 1
+        assert self.test_client.__str__() == "Test Client"
 
 
 class ContractModelTest(TestCase):
-
+    @pytest.mark.unit
+    @pytest.mark.django_db
     def setUp(self):
-        self.status = True
-        self.amount = 15786.25
-        self.payment_due = timezone.now() + timedelta(days=30)
-        self.client = ClientModelTest().setUp()
-        self.sales_contact = self.client.sales_contact
-        self.test_contract = Contract.objects.create(
-            sales_contact=self.sales_contact,
-            client=self.client,
-            status=self.status,
-            amount=self.amount,
-            payment_due=self.payment_due
-        )
+        sales_contact = mock.Mock(spec=SalesContact)
+        sales_contact.username = "salescontact"
+        sales_contact._state = mock.Mock(name="sales_contact")
+        client = mock.Mock(spec=Client)
+        client._state = mock.Mock(name="client")
+        client.first_name = "test"
+        client.sales_contact = sales_contact
+        self.test_contract = Contract()
+        self.test_contract.status = True
+        self.test_contract.amount = 15786.25
+        self.test_contract.payment_due = timezone.now() + timedelta(days=30)
+        self.test_contract.client = client
+        # self.test_contract.sales_contact = sales_contact
 
+
+    @pytest.mark.unit
+    @pytest.mark.django_db
     def test_create_contract(self):
         assert isinstance(self.test_contract, Contract)
-
-    def test_contract_count(self):
-        assert Contract.objects.count() == 1
 
 
 class EventStatusModelTest(TestCase):
@@ -184,23 +112,23 @@ class EventStatusModelTest(TestCase):
 class EventModelTest(TestCase):
 
     def setUp(self):
-        self.client = ClientModelTest().setUp()
-        self.support_contact = SupportContactModelTest().setUp()
-        self.event_status = EventStatusModelTest().setUp()[0]
-        self.attendees = 100
-        self.event_date = timezone.now() + timedelta(days=15)
-        self.notes = "Test Event Model"
-        self.test_event = Event.objects.create(
-            client=self.client,
-            support_contact=self.support_contact,
-            event_status=self.event_status,
-            attendees=self.attendees,
-            event_date=self.event_date,
-            notes=self.notes
-        )
+        client = mock.Mock(spec=Client)
+        client._state = mock.Mock(name="client")
+        client.first_name = "test"
+        self.test_event = Event()
+        self.test_event.attendees = 100
+        self.test_event.event_date = timezone.now() + timedelta(days=15)
+        self.test_event.notes = "Test Event Model"
+        self.test_event.client = client
+        """
+        support_contact = mock.Mock(spec=SupportContact)
+        support_contact._state = mock.Mock()
+        support_contact.username = "supportcontact"
+        self.test_event.support_contact = support_contact
+        event_status = mock.Mock(spec=EventStatus)
+        event_status._state = mock.Mock()
+        self.test_event.event_status = event_status
+        """
 
     def test_create_event(self):
         assert isinstance(self.test_event, Event)
-
-    def test_event_count(self):
-        assert Event.objects.count() == 1

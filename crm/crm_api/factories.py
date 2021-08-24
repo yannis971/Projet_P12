@@ -1,8 +1,17 @@
 import factory
 from datetime import timedelta
 from django.utils import timezone
-
+from django.contrib.auth.models import User
 from . import models
+
+
+class UserFactory(factory.Factory):
+
+    class Meta:
+        model = User
+
+    username = "testuser"
+    password = "testuser"
 
 
 class SalesContactFactory(factory.Factory):
@@ -10,11 +19,8 @@ class SalesContactFactory(factory.Factory):
     class Meta:
         model = models.SalesContact
 
-    username = "testsalescontact"
-    email = "testsalescontact@testbase.com"
-    first_name = "Test"
-    last_name = "SalesContact"
-    password = "test"
+    user = User(username="testsalescontact", password="test")
+    user_id = id(user)
 
 
 class SupportContactFactory(factory.Factory):
@@ -22,11 +28,17 @@ class SupportContactFactory(factory.Factory):
     class Meta:
         model = models.SupportContact
 
-    username = "testsupportcontact"
-    email = "testsupportcontact@testbase.com"
-    first_name = "Test"
-    last_name = "SupportContact"
-    password = "test"
+    user = User(username="testsupportcontact", password="test")
+    user_id = id(user)
+
+
+class StaffContactFactory(factory.Factory):
+
+    class Meta:
+        model = models.StaffContact
+
+    user = User(username="teststaffcontact", password="test")
+    user_id = id(user)
 
 
 class ClientFactory(factory.Factory):
