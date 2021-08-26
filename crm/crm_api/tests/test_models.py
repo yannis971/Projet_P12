@@ -1,9 +1,9 @@
 import mock
 import pytest
-from datetime import timedelta
+from datetime import datetime, timedelta
 from django.utils import timezone
 from django.test import TestCase
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from crm_api.models import Client, Contract, EventStatus, Event, SalesContact, StaffContact, SupportContact
 
 
@@ -69,28 +69,27 @@ class ClientModelTest(TestCase):
 
 
 class ContractModelTest(TestCase):
-    @pytest.mark.unit
-    @pytest.mark.django_db
-    def setUp(self):
-        sales_contact = mock.Mock(spec=SalesContact)
-        sales_contact.username = "salescontact"
-        sales_contact._state = mock.Mock(name="sales_contact")
-        client = mock.Mock(spec=Client)
-        client._state = mock.Mock(name="client")
-        client.first_name = "test"
-        client.sales_contact = sales_contact
-        self.test_contract = Contract()
-        self.test_contract.status = True
-        self.test_contract.amount = 15786.25
-        self.test_contract.payment_due = timezone.now() + timedelta(days=30)
-        self.test_contract.client = client
-        # self.test_contract.sales_contact = sales_contact
 
+    @classmethod
+    @pytest.mark.django_db
+    def setUpTestData(cls):
+        Group.objects.create(name="SALES")
+        sales_contact = SalesContact.objects.create(user=User(username="test_sales_contact", password="test"))
+        client = Client.objects.create(first_name="test", last_name="client", email="testclient@example.com", sales_contact=sales_contact)
+        Contract.objects.create(sales_contact=sales_contact, client=client, status=True, amount=1000.00,
+                                payment_due=datetime.fromisoformat('2021-12-01 00:00:00.000+00:00'))
 
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_create_contract(self):
-        assert isinstance(self.test_contract, Contract)
+        contract = Contract.objects.get(id=1)
+        assert isinstance(contract, Contract)
+
+    @pytest.mark.unit
+    @pytest.mark.django_db
+    def test_contract_str(self):
+        contract = Contract.objects.get(id=1)
+        assert contract.__str__() == "test client | test_sales_contact | True | 1000.00 | 2021-12-01 00:00:00+00:00"
 
 
 class EventStatusModelTest(TestCase):
@@ -111,6 +110,27 @@ class EventStatusModelTest(TestCase):
 
 class EventModelTest(TestCase):
 
+    @classmethod
+    @pytest.mark.django_db
+    def setUpTestData(cls):
+        Group.objects.create(name="SALES")
+        Group.objects.create(name="SUPPORT")
+        sales_contact = SalesContact.objects.create(user=User(username="test_sales_contact", password="test"))
+        client = Client.objects.create(first_name="test", last_name="client", email="testclient@example.com", sales_contact=sales_contact)
+        Contract.objects.create(sales_contact=sales_contact, client=client, status=True, amount=1000.00,
+                                payment_due=datetime.fromisoformat('2021-12-01 00:00:00.000+00:00'))
+
+    @pytest.mark.unit
+    @pytest.mark.django_db
+    def test_create_contract(self):
+        contract = Contract.objects.get(id=1)
+        assert isinstance(contract, Contract)
+
+    @pytest.mark.unit
+    @pytest.mark.django_db
+    def test_contract_str(self):
+        contract = Contract.objects.get(id=1)
+        assert contract.__str__() == "test client | test_sales_contact | True | 1000.00 | 2021-12-01 00:00:00+00:00"
     def setUp(self):
         client = mock.Mock(spec=Client)
         client._state = mock.Mock(name="client")
