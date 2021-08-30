@@ -96,6 +96,7 @@ class ContractModelTest(TestCase):
     def test_contract_count(self):
         assert Contract.objects.count() == 1
 
+
 class EventStatusModelTest(TestCase):
 
     @classmethod
