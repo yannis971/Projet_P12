@@ -1,4 +1,6 @@
+.coverage
 .idea/
 env/
+crm/htmlcov/
 crm/*/__pycache__/
 crm/*/*/__pycache__/
