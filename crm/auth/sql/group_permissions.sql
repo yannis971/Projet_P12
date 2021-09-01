@@ -4,7 +4,7 @@ INSERT INTO auth_group_permissions (group_id, permission_id)
     INNER JOIN django_content_type AS content_type
         ON permission.content_type_id = content_type.id
     WHERE content_type.app_label = 'crm_api'
-    AND content_type.model IN ('salescontact', 'supportcontact', 'staffcontact');
+    AND content_type.model IN ('user', 'salescontact', 'supportcontact', 'staffcontact');
 
 INSERT INTO auth_group_permissions (group_id, permission_id)
     SELECT 1, permission.id

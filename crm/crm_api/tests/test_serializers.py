@@ -1,14 +1,20 @@
-import pytest
-import factory
 from datetime import timedelta
+
+import factory
+import pytest
+from django.test import TestCase
 from django.utils import timezone
 
-from crm_api.serializers import ClientSerializer, ContractSerializer, EventSerializer, UserSerializer, SalesContactSerializer, SupportContactSerializer, StaffContactSerializer
-from crm_api.factories import UserFactory, SalesContactFactory, SupportContactFactory, StaffContactFactory, ClientFactory, ContractFactory, EventFactory
+from crm_api.factories import (ClientFactory, ContractFactory, EventFactory,
+                               SalesContactFactory, StaffContactFactory,
+                               SupportContactFactory, UserFactory)
+from crm_api.serializers import (ClientSerializer, ContractSerializer,
+                                 EventSerializer, SalesContactSerializer,
+                                 StaffContactSerializer,
+                                 SupportContactSerializer, UserSerializer)
 
 
-class TestClientSerializer:
-
+class TestClientSerializer(TestCase):
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialize_model(self):
@@ -20,10 +26,7 @@ class TestClientSerializer:
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialized_data(self):
-        valid_serialized_data = factory.build(
-            dict,
-            FACTORY_CLASS=ClientFactory
-        )
+        valid_serialized_data = factory.build(dict, FACTORY_CLASS=ClientFactory)
         serializer = ClientSerializer(data=valid_serialized_data)
 
         assert serializer.is_valid()
@@ -33,52 +36,51 @@ class TestClientSerializer:
     @pytest.mark.django_db
     def test_serialize_max_length_error(self):
         non_valid_data = {
-            'first_name': "x" * 26,
-            'last_name': "y" * 26,
-            'email': "testclient@testbase.com" * 10,
-            'phone': "9" * 21,
-            'mobile': "6" * 21
+            "first_name": "x" * 26,
+            "last_name": "y" * 26,
+            "email": "testclient@testbase.com" * 10,
+            "phone": "9" * 21,
+            "mobile": "6" * 21,
         }
         serializer = ClientSerializer(data=non_valid_data)
 
-        assert serializer.is_valid() == False
+        self.assertFalse(serializer.is_valid())
         for key in non_valid_data.keys():
-            assert serializer.errors[key][0].code == 'max_length'
+            assert serializer.errors[key][0].code == "max_length"
 
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialize_blank_value_error(self):
         non_valid_data = {
-            'first_name': "",
-            'last_name': "",
-            'email': "",
-            'phone': "",
-            'mobile': ""
+            "first_name": "",
+            "last_name": "",
+            "email": "",
+            "phone": "",
+            "mobile": "",
         }
         serializer = ClientSerializer(data=non_valid_data)
 
-        assert serializer.is_valid() == False
-        for key in 'first_name', 'last_name', 'email':
-            assert serializer.errors[key][0].code == 'blank'
+        self.assertFalse(serializer.is_valid())
+        for key in "first_name", "last_name", "email":
+            assert serializer.errors[key][0].code == "blank"
 
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialize_email_error(self):
         non_valid_data = {
-            'first_name': "Test",
-            'last_name': "Client",
-            'email': "testclientxtestbase.com",
-            'phone': "123456789",
-            'mobile': ""
+            "first_name": "Test",
+            "last_name": "Client",
+            "email": "testclientxtestbase.com",
+            "phone": "123456789",
+            "mobile": "",
         }
         serializer = ClientSerializer(data=non_valid_data)
 
-        assert serializer.is_valid() == False
-        assert serializer.errors['email'][0].code == 'invalid'
+        self.assertFalse(serializer.is_valid())
+        assert serializer.errors["email"][0].code == "invalid"
 
 
-class TestContractSerializer:
-
+class TestContractSerializer(TestCase):
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialize_model(self):
@@ -90,10 +92,7 @@ class TestContractSerializer:
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialized_data(self):
-        valid_serialized_data = factory.build(
-            dict,
-            FACTORY_CLASS=ContractFactory
-        )
+        valid_serialized_data = factory.build(dict, FACTORY_CLASS=ContractFactory)
         serializer = ContractSerializer(data=valid_serialized_data)
 
         assert serializer.is_valid()
@@ -103,57 +102,56 @@ class TestContractSerializer:
     @pytest.mark.django_db
     def test_serialize_status_error(self):
         non_valid_data = {
-            'status': 'string',
-            'amount': 9157863.25,
-            'payment_due': timezone.now() + timedelta(days=30)
+            "status": "string",
+            "amount": 9157863.25,
+            "payment_due": timezone.now() + timedelta(days=30),
         }
         serializer = ContractSerializer(data=non_valid_data)
 
-        assert serializer.is_valid() == False
-        assert serializer.errors['status'][0].code == 'invalid'
+        self.assertFalse(serializer.is_valid())
+        assert serializer.errors["status"][0].code == "invalid"
 
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialize_amount_max_digits_error(self):
         non_valid_data = {
-            'status': False,
-            'amount': 49157863.25,
-            'payment_due': timezone.now() + timedelta(days=30)
+            "status": False,
+            "amount": 49157863.25,
+            "payment_due": timezone.now() + timedelta(days=30),
         }
         serializer = ContractSerializer(data=non_valid_data)
 
-        assert serializer.is_valid() == False
-        assert serializer.errors['amount'][0].code == 'max_digits'
+        self.assertFalse(serializer.is_valid())
+        assert serializer.errors["amount"][0].code == "max_digits"
 
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialize_amount_type_error(self):
         non_valid_data = {
-            'status': False,
-            'amount': 'string',
-            'payment_due': timezone.now() + timedelta(days=30)
+            "status": False,
+            "amount": "string",
+            "payment_due": timezone.now() + timedelta(days=30),
         }
         serializer = ContractSerializer(data=non_valid_data)
 
-        assert serializer.is_valid() == False
-        assert serializer.errors['amount'][0].code == 'invalid'
+        self.assertFalse(serializer.is_valid())
+        assert serializer.errors["amount"][0].code == "invalid"
 
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialize_payment_due_error(self):
         non_valid_data = {
-            'status': False,
-            'amount': 9157863.25,
-            'payment_due': '2020-12-31'
+            "status": False,
+            "amount": 9157863.25,
+            "payment_due": "2020-12-31",
         }
         serializer = ContractSerializer(data=non_valid_data)
 
-        assert serializer.is_valid() == False
-        assert serializer.errors['payment_due'][0].code == 'invalid'
+        self.assertFalse(serializer.is_valid())
+        assert serializer.errors["payment_due"][0].code == "invalid"
 
 
-class TestEventSerializer:
-
+class TestEventSerializer(TestCase):
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialize_model(self):
@@ -165,10 +163,7 @@ class TestEventSerializer:
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialized_data(self):
-        valid_serialized_data = factory.build(
-            dict,
-            FACTORY_CLASS=EventFactory
-        )
+        valid_serialized_data = factory.build(dict, FACTORY_CLASS=EventFactory)
         serializer = EventSerializer(data=valid_serialized_data)
 
         assert serializer.is_valid()
@@ -178,57 +173,56 @@ class TestEventSerializer:
     @pytest.mark.django_db
     def test_serialize_attendees_type_error(self):
         non_valid_data = {
-            'attendees': False,
-            'event_date': timezone.now() + timedelta(days=30),
-            'notes': "Test Event Model"
+            "attendees": False,
+            "event_date": timezone.now() + timedelta(days=30),
+            "notes": "Test Event Model",
         }
         serializer = EventSerializer(data=non_valid_data)
 
-        assert serializer.is_valid() == False
-        assert serializer.errors['attendees'][0].code == 'invalid'
+        self.assertFalse(serializer.is_valid())
+        assert serializer.errors["attendees"][0].code == "invalid"
 
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialize_event_date_error(self):
         non_valid_data = {
-            'attendees': 100,
-            'event_date': '2021-12-31',
-            'notes': "Test Event Model"
+            "attendees": 100,
+            "event_date": "2021-12-31",
+            "notes": "Test Event Model",
         }
         serializer = EventSerializer(data=non_valid_data)
 
-        assert serializer.is_valid() == False
-        assert serializer.errors['event_date'][0].code == 'invalid'
+        self.assertIsNot(serializer.is_valid(), True)
+        assert serializer.errors["event_date"][0].code == "invalid"
 
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialize_notes_type_error(self):
         non_valid_data = {
-            'attendees': 100,
-            'event_date': timezone.now() + timedelta(days=30),
-            'notes': [1, 2, 3, 4]
+            "attendees": 100,
+            "event_date": timezone.now() + timedelta(days=30),
+            "notes": [1, 2, 3, 4],
         }
         serializer = EventSerializer(data=non_valid_data)
 
-        assert serializer.is_valid() == False
-        assert serializer.errors['notes'][0].code == 'invalid'
+        self.assertFalse(serializer.is_valid())
+        assert serializer.errors["notes"][0].code == "invalid"
 
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialize_notes_max_length_error(self):
         non_valid_data = {
-            'attendees': 100,
-            'event_date': timezone.now() + timedelta(days=30),
-            'notes': "x" * 2049
+            "attendees": 100,
+            "event_date": timezone.now() + timedelta(days=30),
+            "notes": "x" * 2049,
         }
         serializer = EventSerializer(data=non_valid_data)
 
-        assert serializer.is_valid() == False
-        assert serializer.errors['notes'][0].code == 'max_length'
+        self.assertFalse(serializer.is_valid())
+        assert serializer.errors["notes"][0].code == "max_length"
 
 
-class TestUserSerializer:
-
+class TestUserSerializer(TestCase):
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialize_model(self):
@@ -240,10 +234,7 @@ class TestUserSerializer:
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialized_data(self):
-        valid_serialized_data = factory.build(
-            dict,
-            FACTORY_CLASS=UserFactory
-        )
+        valid_serialized_data = factory.build(dict, FACTORY_CLASS=UserFactory)
         serializer = UserSerializer(data=valid_serialized_data)
 
         assert serializer.is_valid()
@@ -251,7 +242,6 @@ class TestUserSerializer:
 
 
 class TestSalesContactSerializer:
-
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialize_model(self):
@@ -273,8 +263,7 @@ class TestSalesContactSerializer:
         assert serializer.errors == {}
 
 
-class TestSupportContactSerializer:
-
+class TestSupportContactSerializer(TestCase):
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialize_model(self):
@@ -296,15 +285,14 @@ class TestSupportContactSerializer:
         assert serializer.errors == {}
 
 
-class TestStaffContactSerializer:
-
+class TestStaffContactSerializer(TestCase):
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialize_model(self):
         staff_contact = StaffContactFactory.build()
         serializer = StaffContactSerializer(staff_contact)
 
-        assert serializer.data
+        self.assert_(serializer.data)
 
     @pytest.mark.unit
     @pytest.mark.django_db

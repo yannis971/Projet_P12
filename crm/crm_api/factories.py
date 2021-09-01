@@ -1,51 +1,53 @@
-import factory
 from datetime import timedelta
+
+import factory
 from django.utils import timezone
-from django.contrib.auth.models import User
-from . import models
+
+from crm_api.models import (Client, Contract, Event, EventStatus, SalesContact,
+                            StaffContact, SupportContact, User)
 
 
 class UserFactory(factory.Factory):
-
     class Meta:
         model = User
 
+    user_id = 1
     username = "testuser"
     password = "testuser"
 
 
 class SalesContactFactory(factory.Factory):
-
     class Meta:
-        model = models.SalesContact
+        model = SalesContact
 
+    sales_contact_id = 1
     user = User(username="testsalescontact", password="test")
-    user_id = id(user)
+    user_id = user.user_id
 
 
 class SupportContactFactory(factory.Factory):
-
     class Meta:
-        model = models.SupportContact
+        model = SupportContact
 
+    support_contact_id = 1
     user = User(username="testsupportcontact", password="test")
-    user_id = id(user)
+    user_id = user.user_id
 
 
 class StaffContactFactory(factory.Factory):
-
     class Meta:
-        model = models.StaffContact
+        model = StaffContact
 
+    staff_contact_id = 1
     user = User(username="teststaffcontact", password="test")
-    user_id = id(user)
+    user_id = user.user_id
 
 
 class ClientFactory(factory.Factory):
-
     class Meta:
-        model = models.Client
+        model = Client
 
+    client_id = 1
     first_name = "Test"
     last_name = "Client"
     email = "testclient@testbase.com"
@@ -56,10 +58,10 @@ class ClientFactory(factory.Factory):
 
 
 class ContractFactory(factory.Factory):
-
     class Meta:
-        model = models.Contract
+        model = Contract
 
+    contract_id = 1
     status = True
     amount = 9157863.25
     payment_due = timezone.now() + timedelta(days=30)
@@ -70,18 +72,18 @@ class ContractFactory(factory.Factory):
 
 
 class EventStatusFactory(factory.Factory):
-
     class Meta:
-        model = models.EventStatus
+        model = EventStatus
 
-    status = models.EventStatus.Status.CREATED
+    event_status_id = 1
+    status = EventStatus.Status.CREATED
 
 
 class EventFactory(factory.Factory):
-
     class Meta:
-        model = models.Event
+        model = Event
 
+    event_id = 1
     client = factory.SubFactory(ClientFactory)
     client_id = id(client)
     support_contact = factory.SubFactory(SupportContactFactory)
