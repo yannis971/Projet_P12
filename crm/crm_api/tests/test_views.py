@@ -226,7 +226,7 @@ class ClientViewTest(TestCase):
                     'email': 'second.client@example.com',
                     'phone': '',
                     'mobile': '',
-                    'sales_contact_id': sales_contact.sales_contact_id}
+                    'sales_contact_id': sales_contact.id}
         else:
             data = {}
         response = self.client.post(url, data, format='json')
@@ -239,7 +239,7 @@ class ClientViewTest(TestCase):
         ('staff_contact', 'test', '33145913572', '33646258429', status.HTTP_200_OK),
         ('anonymous_user', 'test', '', '', status.HTTP_403_FORBIDDEN),
     ])
-    def test_change_client(self, username, password, phone, mobile, status_code):
+    def test_change_client(self, username, password, new_phone, new_mobile, status_code):
         url = '/login/'
         data = {'username': username, 'password': password}
         response = self.client.post(url, data, format='json')
@@ -251,15 +251,14 @@ class ClientViewTest(TestCase):
             data = {'first_name': 'second',
                     'last_name': 'client',
                     'email': 'second.client@example.com',
-                    'phone': phone,
-                    'mobile': mobile,
-                    'sales_contact_id': sales_contact.sales_contact_id}
+                    'phone': new_phone,
+                    'mobile': new_mobile,
+                    'sales_contact_id': sales_contact.id}
             print(username, "data :", data)
         else:
             data = {}
-        response = self.client.put(url, data, format='json')
+        response = self.client.put(url, data, format='json', content_type='application/json')
         self.assertEqual(response.status_code, status_code)
         if status_code == status.HTTP_200_OK:
             self.assertEqual(response.data['phone'], new_phone)
             self.assertEqual(response.data['mobile'], new_mobile)
-

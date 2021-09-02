@@ -111,108 +111,108 @@
     "model": "auth.permission",
     "pk": 13,
     "fields": {
-        "name": "Can add content type",
+        "name": "Can add user",
         "content_type": 4,
-        "codename": "add_contenttype"
+        "codename": "add_user"
     }
 },
 {
     "model": "auth.permission",
     "pk": 14,
     "fields": {
-        "name": "Can change content type",
+        "name": "Can change user",
         "content_type": 4,
-        "codename": "change_contenttype"
+        "codename": "change_user"
     }
 },
 {
     "model": "auth.permission",
     "pk": 15,
     "fields": {
-        "name": "Can delete content type",
+        "name": "Can delete user",
         "content_type": 4,
-        "codename": "delete_contenttype"
+        "codename": "delete_user"
     }
 },
 {
     "model": "auth.permission",
     "pk": 16,
     "fields": {
-        "name": "Can view content type",
+        "name": "Can view user",
         "content_type": 4,
-        "codename": "view_contenttype"
+        "codename": "view_user"
     }
 },
 {
     "model": "auth.permission",
     "pk": 17,
     "fields": {
-        "name": "Can add session",
+        "name": "Can add content type",
         "content_type": 5,
-        "codename": "add_session"
+        "codename": "add_contenttype"
     }
 },
 {
     "model": "auth.permission",
     "pk": 18,
     "fields": {
-        "name": "Can change session",
+        "name": "Can change content type",
         "content_type": 5,
-        "codename": "change_session"
+        "codename": "change_contenttype"
     }
 },
 {
     "model": "auth.permission",
     "pk": 19,
     "fields": {
-        "name": "Can delete session",
+        "name": "Can delete content type",
         "content_type": 5,
-        "codename": "delete_session"
+        "codename": "delete_contenttype"
     }
 },
 {
     "model": "auth.permission",
     "pk": 20,
     "fields": {
-        "name": "Can view session",
+        "name": "Can view content type",
         "content_type": 5,
-        "codename": "view_session"
+        "codename": "view_contenttype"
     }
 },
 {
     "model": "auth.permission",
     "pk": 21,
     "fields": {
-        "name": "Can add user",
+        "name": "Can add session",
         "content_type": 6,
-        "codename": "add_user"
+        "codename": "add_session"
     }
 },
 {
     "model": "auth.permission",
     "pk": 22,
     "fields": {
-        "name": "Can change user",
+        "name": "Can change session",
         "content_type": 6,
-        "codename": "change_user"
+        "codename": "change_session"
     }
 },
 {
     "model": "auth.permission",
     "pk": 23,
     "fields": {
-        "name": "Can delete user",
+        "name": "Can delete session",
         "content_type": 6,
-        "codename": "delete_user"
+        "codename": "delete_session"
     }
 },
 {
     "model": "auth.permission",
     "pk": 24,
     "fields": {
-        "name": "Can view user",
+        "name": "Can view session",
         "content_type": 6,
-        "codename": "view_user"
+        "codename": "view_session"
     }
 },
 {
@@ -469,7 +469,7 @@
 },
 {
     "model": "auth.permission",
-    "pk": 54,
+    "pk": 53,
     "fields": {
         "name": "Can change contract status",
         "content_type": 13,

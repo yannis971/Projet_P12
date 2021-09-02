@@ -2,19 +2,21 @@ from django.shortcuts import get_object_or_404
 
 from rest_framework import serializers
 
+from django.contrib.auth.models import User
+
 from crm_api.models import (Client, Contract, Event, EventStatus,
-                            SalesContact, StaffContact, SupportContact, User)
+                            SalesContact, StaffContact, SupportContact)
 
 
 class ClientSerializer(serializers.ModelSerializer):
     """
     Client serializer
     """
-    sales_contact_id = serializers.ReadOnlyField(source='sales_contact.sales_contact_id')
+    sales_contact_id = serializers.ReadOnlyField(source='sales_contact.id')
 
     class Meta:
         model = Client
-        fields = ['client_id', 'first_name', 'last_name',
+        fields = ['first_name', 'last_name',
                   'email', 'phone', 'mobile', 'sales_contact_id']
 
     def save(self, **kwargs):
@@ -26,12 +28,12 @@ class ContractSerializer(serializers.ModelSerializer):
     """
     Contract serializer
     """
-    sales_contact_id = serializers.ReadOnlyField(source='sales_contact.sales_contact_id')
-    client_id = serializers.ReadOnlyField(source='client.client_id')
+    sales_contact_id = serializers.ReadOnlyField(source='sales_contact.id')
+    client_id = serializers.ReadOnlyField(source='client.id')
 
     class Meta:
         model = Contract
-        fields = ['contract_id', 'sales_contact_id', 'client_id',
+        fields = ['sales_contact_id', 'client_id',
                   'status', 'amount', 'payment_due']
 
     def save(self, **kwargs):
@@ -44,13 +46,13 @@ class EventSerializer(serializers.ModelSerializer):
     """
     Event serializer
     """
-    support_contact_id = serializers.ReadOnlyField(source='support_contact.support_contact_id')
-    client_id = serializers.ReadOnlyField(source='client.client_id')
-    event_status_id = serializers.ReadOnlyField(source='event_status.event_status_id')
+    support_contact_id = serializers.ReadOnlyField(source='support_contact.id')
+    client_id = serializers.ReadOnlyField(source='client.id')
+    event_status_id = serializers.ReadOnlyField(source='event_status.id')
 
     class Meta:
         model = Event
-        fields = ['event_id', 'client_id', 'support_contact_id',
+        fields = ['client_id', 'support_contact_id',
                   'event_status_id', 'attendees', 'event_date', 'notes']
 
     def save(self, **kwargs):
@@ -67,3 +69,45 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username', 'password']
+
+
+class SalesContactSerializer(serializers.ModelSerializer):
+    user_id = serializers.ReadOnlyField(source='user.id')
+    username = serializers.ReadOnlyField(source='user.username')
+    password = serializers.ReadOnlyField(source='user.password')
+
+    class Meta:
+        model = SalesContact
+        fields = ['user_id', 'username', 'password']
+
+    def save(self, **kwargs):
+        the_user = get_object_or_404(User, pk=self._kwargs['data']['user_id'])
+        return super().save(user=the_user)
+
+
+class SupportContactSerializer(serializers.ModelSerializer):
+    user_id = serializers.ReadOnlyField(source='user.id')
+    username = serializers.ReadOnlyField(source='user.username')
+    password = serializers.ReadOnlyField(source='user.password')
+
+    class Meta:
+        model = SupportContact
+        fields = ['user_id', 'username', 'password']
+
+    def save(self, **kwargs):
+        the_user = get_object_or_404(User, pk=self._kwargs['data']['user_id'])
+        return super().save(user=the_user)
+
+
+class StaffContactSerializer(serializers.ModelSerializer):
+    user_id = serializers.ReadOnlyField(source='user.id')
+    username = serializers.ReadOnlyField(source='user.username')
+    password = serializers.ReadOnlyField(source='user.password')
+
+    class Meta:
+        model = StaffContact
+        fields = ['user_id', 'username', 'password']
+
+    def save(self, **kwargs):
+        the_user = get_object_or_404(User, pk=self._kwargs['data']['user_id'])
+        return super().save(user=the_user)

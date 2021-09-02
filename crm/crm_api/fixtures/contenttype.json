@@ -27,24 +27,24 @@
     "model": "contenttypes.contenttype",
     "pk": 4,
     "fields": {
-        "app_label": "contenttypes",
-        "model": "contenttype"
+        "app_label": "auth",
+        "model": "user"
     }
 },
 {
     "model": "contenttypes.contenttype",
     "pk": 5,
     "fields": {
-        "app_label": "sessions",
-        "model": "session"
+        "app_label": "contenttypes",
+        "model": "contenttype"
     }
 },
 {
     "model": "contenttypes.contenttype",
     "pk": 6,
     "fields": {
-        "app_label": "crm_api",
-        "model": "user"
+        "app_label": "sessions",
+        "model": "session"
     }
 }
 ]

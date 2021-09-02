@@ -3,15 +3,16 @@ from datetime import timedelta
 import factory
 from django.utils import timezone
 
+from django.contrib.auth.models import User
+
 from crm_api.models import (Client, Contract, Event, EventStatus, SalesContact,
-                            StaffContact, SupportContact, User)
+                            StaffContact, SupportContact)
 
 
 class UserFactory(factory.Factory):
     class Meta:
         model = User
 
-    user_id = 1
     username = "testuser"
     password = "testuser"
 
@@ -20,34 +21,31 @@ class SalesContactFactory(factory.Factory):
     class Meta:
         model = SalesContact
 
-    sales_contact_id = 1
+
     user = User(username="testsalescontact", password="test")
-    user_id = user.user_id
+    user_id = user.id
 
 
 class SupportContactFactory(factory.Factory):
     class Meta:
         model = SupportContact
 
-    support_contact_id = 1
     user = User(username="testsupportcontact", password="test")
-    user_id = user.user_id
+    user_id = user.id
 
 
 class StaffContactFactory(factory.Factory):
     class Meta:
         model = StaffContact
 
-    staff_contact_id = 1
     user = User(username="teststaffcontact", password="test")
-    user_id = user.user_id
+    user_id = user.id
 
 
 class ClientFactory(factory.Factory):
     class Meta:
         model = Client
 
-    client_id = 1
     first_name = "Test"
     last_name = "Client"
     email = "testclient@testbase.com"
@@ -61,7 +59,6 @@ class ContractFactory(factory.Factory):
     class Meta:
         model = Contract
 
-    contract_id = 1
     status = True
     amount = 9157863.25
     payment_due = timezone.now() + timedelta(days=30)
@@ -75,7 +72,6 @@ class EventStatusFactory(factory.Factory):
     class Meta:
         model = EventStatus
 
-    event_status_id = 1
     status = EventStatus.Status.CREATED
 
 
@@ -83,7 +79,6 @@ class EventFactory(factory.Factory):
     class Meta:
         model = Event
 
-    event_id = 1
     client = factory.SubFactory(ClientFactory)
     client_id = id(client)
     support_contact = factory.SubFactory(SupportContactFactory)
