@@ -26,15 +26,13 @@ from rest_framework.response import Response
 
 from rest_framework_jwt.settings import api_settings
 
-from django.contrib.auth.models import User
-
 from crm_api.models import SalesContact, Client, Contract, Event
 
 # from crm_api.permissions import IsAuthenticatedStaffMember
 
 from crm_api.decorators import route_permissions
 
-from crm_api.serializers import ClientSerializer, ContractSerializer, EventSerializer, UserSerializer, SalesContactSerializer
+from crm_api.serializers import ClientSerializer, ContractSerializer, EventSerializer, UserSerializer, SalesContactSerializer, User
 
 # Create your views here.
 
@@ -143,6 +141,7 @@ class ClientViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
     redirect_field_name = None
+
 
     @route_permissions('crm_api.add_client')
     def create(self, request, *args, **kwargs):

@@ -2,8 +2,7 @@ import pytest
 from django.urls import reverse
 from django.test import TestCase
 from rest_framework import status
-from django.contrib.auth.models import User, Group
-from crm_api.models import SalesContact, SupportContact, StaffContact, Client
+from crm_api.models import SalesContact, SupportContact, StaffContact, User, Client
 
 from parameterized import parameterized
 
@@ -227,8 +226,40 @@ class ClientViewTest(TestCase):
                     'email': 'second.client@example.com',
                     'phone': '',
                     'mobile': '',
-                    'sales_contact_id': sales_contact.id}
+                    'sales_contact_id': sales_contact.sales_contact_id}
         else:
             data = {}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status_code)
+
+    @pytest.mark.django_db
+    @parameterized.expand([
+        ('sales_contact', 'test', '33489916502', '33786753421', status.HTTP_200_OK),
+        ('support_contact', 'test', '', '', status.HTTP_403_FORBIDDEN),
+        ('staff_contact', 'test', '33145913572', '33646258429', status.HTTP_200_OK),
+        ('anonymous_user', 'test', '', '', status.HTTP_403_FORBIDDEN),
+    ])
+    def test_change_client(self, username, password, phone, mobile, status_code):
+        url = '/login/'
+        data = {'username': username, 'password': password}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        url = '/clients/1/'
+        if username == 'sales_contact' or username == 'staff_contact':
+            user = User.objects.get(username='sales_contact')
+            sales_contact = SalesContact.objects.get(user=user)
+            data = {'first_name': 'second',
+                    'last_name': 'client',
+                    'email': 'second.client@example.com',
+                    'phone': phone,
+                    'mobile': mobile,
+                    'sales_contact_id': sales_contact.sales_contact_id}
+            print(username, "data :", data)
+        else:
+            data = {}
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status_code)
+        if status_code == status.HTTP_200_OK:
+            self.assertEqual(response.data['phone'], new_phone)
+            self.assertEqual(response.data['mobile'], new_mobile)
+
