@@ -3,8 +3,8 @@ from datetime import datetime
 import mock
 import pytest
 from crm_api.models import (Client, Contract, Event, EventStatus, SalesContact,
-                            StaffContact, SupportContact, User)
-from django.contrib.auth.models import Group
+                            StaffContact, SupportContact)
+from django.contrib.auth.models import User, Group
 from django.test import TestCase
 
 

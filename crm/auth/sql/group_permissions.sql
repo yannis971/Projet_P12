@@ -3,8 +3,8 @@ INSERT INTO auth_group_permissions (group_id, permission_id)
     FROM auth_permission AS permission
     INNER JOIN django_content_type AS content_type
         ON permission.content_type_id = content_type.id
-    WHERE content_type.app_label = 'crm_api'
-    AND content_type.model IN ('user', 'salescontact', 'supportcontact', 'staffcontact');
+    WHERE (content_type.app_label = 'crm_api' AND content_type.model IN ('salescontact', 'supportcontact', 'staffcontact'))
+    OR (content_type.app_label = 'auth' AND content_type.model = 'user');
 
 INSERT INTO auth_group_permissions (group_id, permission_id)
     SELECT 1, permission.id

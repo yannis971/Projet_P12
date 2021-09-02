@@ -1,13 +1,8 @@
 from datetime import datetime
 
-from django.conf import settings
-from django.contrib.auth.models import AbstractUser, Group
+from django.contrib.auth.models import User, Group
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-
-
-class User(AbstractUser):
-    user_id = models.BigAutoField(primary_key=True)
 
 
 class SalesContact(models.Model):
@@ -15,8 +10,7 @@ class SalesContact(models.Model):
     SalesContact profile
     """
 
-    sales_contact_id = models.BigAutoField(primary_key=True)
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     class Meta:
         db_table = "SalesContacts"
@@ -44,8 +38,7 @@ class StaffContact(models.Model):
     StaffContact profile
     """
 
-    staff_contact_id = models.BigAutoField(primary_key=True)
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     class Meta:
         db_table = "StaffContacts"
@@ -73,8 +66,7 @@ class SupportContact(models.Model):
     SupportContact profile
     """
 
-    support_contact_id = models.BigAutoField(primary_key=True)
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     class Meta:
         db_table = "SupportContacts"
@@ -103,7 +95,6 @@ class Client(models.Model):
     Client Entity
     """
 
-    client_id = models.BigAutoField(primary_key=True)
     first_name = models.CharField(max_length=25)
     last_name = models.CharField(max_length=25)
     email = models.EmailField(max_length=100, unique=True)
@@ -122,7 +113,6 @@ class Contract(models.Model):
     Contrat Entity
     """
 
-    contract_id = models.BigAutoField(primary_key=True)
     sales_contact = models.ForeignKey(to=SalesContact, on_delete=models.CASCADE)
     client = models.ForeignKey(to=Client, on_delete=models.CASCADE)
     date_created = models.DateTimeField(auto_now_add=True)
@@ -143,8 +133,6 @@ class EventStatus(models.Model):
     EventStatus Entity
     """
 
-    event_status_id = models.BigAutoField(primary_key=True)
-
     class Status(models.TextChoices):
         CREATED = "C", _("CREATED")
         ENDED = "E", _("ENDED")
@@ -163,7 +151,6 @@ class Event(models.Model):
     Event Entity
     """
 
-    event_id = models.BigAutoField(primary_key=True)
     client = models.ForeignKey(to=Client, on_delete=models.CASCADE)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
