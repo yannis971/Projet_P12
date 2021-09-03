@@ -1,5 +1,6 @@
 from rest_framework.exceptions import PermissionDenied
 
+
 def route_permissions(permission):
     """ django-rest-framework permission decorator for custom methods """
     def decorator(drf_custom_method):

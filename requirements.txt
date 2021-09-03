@@ -12,3 +12,4 @@ isort==5.9.3
 django-bootstrap4==3.0.1
 djangorestframework-jwt==1.11.0
 parameterized==0.8.1
+pytest-order==1.0.0

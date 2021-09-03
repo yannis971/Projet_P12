@@ -128,8 +128,8 @@ class SalesContactViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
         return super().partial_update(request, *args, **kwargs)
 
     @route_permissions('crm_api.delete_salescontact')
-    def delete(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
 
 
 class ClientViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
@@ -164,8 +164,8 @@ class ClientViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
         return super().partial_update(request, *args, **kwargs)
 
     @route_permissions('crm_api.delete_client')
-    def delete(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
 
 
 class ContractViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
@@ -199,8 +199,8 @@ class ContractViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
         return super().partial_update(request, *args, **kwargs)
 
     @route_permissions('crm_api.delete_contract')
-    def delete(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
 
 
 class EventViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
@@ -234,5 +234,5 @@ class EventViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
         return super().partial_update(request, *args, **kwargs)
 
     @route_permissions('crm_api.delete_event')
-    def delete(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
