@@ -33,3 +33,4 @@ INSERT INTO auth_group_permissions (group_id, permission_id)
     WHERE content_type.app_label = 'crm_api'
     AND ((content_type.model = 'client' AND permission.codename like 'view_%')
     OR (content_type.model = 'event' AND (permission.codename like 'change_%' OR permission.codename like 'view_%')));
+
