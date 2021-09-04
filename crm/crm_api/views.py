@@ -26,13 +26,13 @@ from rest_framework.response import Response
 
 from rest_framework_jwt.settings import api_settings
 
-from crm_api.models import SalesContact, Client, Contract, Event
+from crm_api.models import SalesContact, SupportContact, StaffContact, Client, Contract, Event
 
 # from crm_api.permissions import IsAuthenticatedStaffMember
 
 from crm_api.decorators import route_permissions
 
-from crm_api.serializers import ClientSerializer, ContractSerializer, EventSerializer, UserSerializer, SalesContactSerializer, User
+from crm_api.serializers import ClientSerializer, ContractSerializer, EventSerializer, UserSerializer, SalesContactSerializer, SupportContactSerializer, StaffContactSerializer, User
 
 # Create your views here.
 
@@ -97,6 +97,12 @@ class LogoutView(generics.GenericAPIView):
         return Response(details, status=status.HTTP_200_OK)
 
 
+def create_user(request):
+    the_user_serializer = UserSerializer(data=request.data)
+    the_user_serializer.is_valid(raise_exception=True)
+    return the_user_serializer.save()
+
+
 class SalesContactViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
     """
     class SalesContactViewSet manages the following endpoints :
@@ -109,6 +115,8 @@ class SalesContactViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
 
     @route_permissions('crm_api.add_salescontact')
     def create(self, request, *args, **kwargs):
+        the_user = create_user(request)
+        request.data['user_id'] = the_user.id
         return super().create(request, *args, **kwargs)
 
     @route_permissions('crm_api.view_salescontact')
@@ -128,6 +136,80 @@ class SalesContactViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
         return super().partial_update(request, *args, **kwargs)
 
     @route_permissions('crm_api.delete_salescontact')
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
+
+
+class SupportContactViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
+    """
+    class SupportContactViewSet manages the following endpoints :
+    /supportcontacts/
+    /supportcontacts/{pk}/
+    """
+    queryset = SupportContact.objects.all()
+    serializer_class = SupportContactSerializer
+    redirect_field_name = None
+
+    @route_permissions('crm_api.add_supportcontact')
+    def create(self, request, *args, **kwargs):
+        the_user = create_user(request)
+        request.data['user_id'] = the_user.id
+        return super().create(request, *args, **kwargs)
+
+    @route_permissions('crm_api.view_supportcontact')
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @route_permissions('crm_api.view_supportcontact')
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+    @route_permissions('crm_api.change_supportcontact')
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
+
+    @route_permissions('crm_api.change_supportcontact')
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
+
+    @route_permissions('crm_api.delete_supportcontact')
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
+
+
+class StaffContactViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
+    """
+    class StaffContactViewSet manages the following endpoints :
+    /staffcontacts/
+    /staffcontacts/{pk}/
+    """
+    queryset = StaffContact.objects.all()
+    serializer_class = StaffContactSerializer
+    redirect_field_name = None
+
+    @route_permissions('crm_api.add_staffcontact')
+    def create(self, request, *args, **kwargs):
+        the_user = create_user(request)
+        request.data['user_id'] = the_user.id
+        return super().create(request, *args, **kwargs)
+
+    @route_permissions('crm_api.view_staffcontact')
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @route_permissions('crm_api.view_staffcontact')
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+    @route_permissions('crm_api.change_staffcontact')
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
+
+    @route_permissions('crm_api.change_staffcontact')
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
+
+    @route_permissions('crm_api.delete_staffcontact')
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
 

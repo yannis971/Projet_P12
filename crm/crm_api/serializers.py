@@ -58,7 +58,7 @@ class EventSerializer(serializers.ModelSerializer):
     def save(self, **kwargs):
         the_support_contact = get_object_or_404(SupportContact, pk=self._kwargs['data']['support_contact_id'])
         the_client = get_object_or_404(Client, pk=self._kwargs['data']['client_id'])
-        the_event_status = get_object_or_404(EventStatus, pk=self._kwargs['data']['client_id'])
+        the_event_status = get_object_or_404(EventStatus, pk=self._kwargs['data']['event_status_id'])
         return super().save(support_contact=the_support_contact, client=the_client, event_status=the_event_status)
 
 
@@ -70,7 +70,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['username', 'password']
 
-
+"""
 class SalesContactSerializer(serializers.ModelSerializer):
     user_id = serializers.ReadOnlyField(source='user.id')
     username = serializers.ReadOnlyField(source='user.username')
@@ -78,6 +78,21 @@ class SalesContactSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SalesContact
+        fields = ['user_id', 'username', 'password']
+
+    def save(self, **kwargs):
+        the_user = get_object_or_404(User, pk=self._kwargs['data']['user_id'])
+        return super().save(user=the_user)
+"""
+
+
+class SalesContactSerializer(serializers.ModelSerializer):
+    user_id = serializers.ReadOnlyField(source='user.id')
+    username = serializers.ReadOnlyField(source='user.username')
+    password = serializers.ReadOnlyField(source='user.password')
+
+    class Meta:
+        model = SupportContact
         fields = ['user_id', 'username', 'password']
 
     def save(self, **kwargs):

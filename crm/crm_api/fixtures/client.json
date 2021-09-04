@@ -1,0 +1,16 @@
+[
+{
+    "model": "crm_api.client",
+    "pk": 1,
+    "fields": {
+        "first_name": "test",
+        "last_name": "client",
+        "email": "test.client@exmaple.com",
+        "phone": "",
+        "mobile": "",
+        "sales_contact": 1,
+        "date_created": "2021-09-04T12:46:10.816Z",
+        "date_updated": "2021-09-04T12:46:10.816Z"
+    }
+}
+]

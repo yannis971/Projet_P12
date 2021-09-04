@@ -2,51 +2,12 @@ import pytest
 
 from datetime import datetime
 from django.urls import reverse
-from django.test import TestCase
+from django.test import TestCase, TransactionTestCase
 from rest_framework import status
 from crm_api.models import SalesContact, SupportContact, StaffContact, User, Client, Contract, EventStatus, Event
-from crm_api.serializers import ContractSerializer, EventSerializer
+from crm_api.serializers import SalesContactSerializer, SupportContactSerializer, StaffContactSerializer, ClientSerializer, ContractSerializer, EventSerializer
 
 from parameterized import parameterized
-
-"""
-@pytest.fixture
-def api_client():
-   from rest_framework.test import APIClient
-   return APIClient()
-
-@pytest.mark.django_db
-def test_create_users():
-    Group.objects.create(name="STAFF")
-    Group.objects.create(name="SALES")
-    Group.objects.create(name="SUPPORT")
-    SalesContact.objects.create(user=User(username="test_sales_contact", password="test"))
-    StaffContact.objects.create(user=User(username="test_staff_contact", password="test"))
-    SupportContact.objects.create(user=User(username="test_support_contact", password="test"))
-    assert Group.objects.count() == 3
-    assert User.objects.count() == 3
-
-
-@pytest.mark.django_db
-@pytest.mark.parametrize(
-    'username, password, status_code', [
-        (None, None, 400),
-        (None, 'password', status.HTTP_400_BAD_REQUEST),
-        ('username', None, status.HTTP_400_BAD_REQUEST),
-        ('test_sales_contact', 'invalid_password', status.HTTP_403_FORBIDDEN),
-        ('test_sales_contact', 'test', status.HTTP_200_OK),
-    ]
-)
-def test_login(username, password, status_code, api_client):
-    #url = reverse('login')
-    url = '/login/'
-    data = {'username': username, 'password': password}
-    response = api_client.post(url, data, format='json')
-    if status_code == status.HTTP_200_OK:
-        print("User.objects.count() :", User.objects.count())
-    assert response.status_code == status_code
-
-"""
 
 
 class LoginViewTest(TestCase):
@@ -56,7 +17,7 @@ class LoginViewTest(TestCase):
         # Create a user
         User.objects.create_user(
             username='test_user',
-            password='test',
+            password='N3wpolo6',
         )
 
     @pytest.mark.django_db
@@ -65,7 +26,7 @@ class LoginViewTest(TestCase):
         ('', 'password', status.HTTP_400_BAD_REQUEST),
         ('username', '', status.HTTP_400_BAD_REQUEST),
         ('test_user', 'invalid_password', status.HTTP_403_FORBIDDEN),
-        ('test_user', 'test', status.HTTP_200_OK),
+        ('test_user', 'N3wpolo6', status.HTTP_200_OK),
     ])
     def test_login(self, username, password, status_code):
         url = '/login/'
@@ -119,78 +80,7 @@ class LogoutViewTest(TestCase):
 
 class SalesContactViewTest(TestCase):
 
-    fixtures = ['contenttype.json', 'group.json', 'permission.json']
-
-    @classmethod
-    def setUpTestData(cls):
-        # Create users
-        User.objects.create_user(
-            username='sales_contact',
-            password='test',
-        )
-        SalesContact.objects.create(user=User.objects.get(username='sales_contact'))
-        User.objects.create_user(
-            username='support_contact',
-            password='test',
-        )
-        SupportContact.objects.create(user=User.objects.get(username='support_contact'))
-        User.objects.create_user(
-            username='staff_contact',
-            password='test',
-        )
-        StaffContact.objects.create(user=User.objects.get(username='staff_contact'))
-        User.objects.create_user(
-            username='anonymous_user',
-            password='test',
-        )
-
-    @pytest.mark.django_db
-    @parameterized.expand([
-        ('sales_contact', 'test', status.HTTP_403_FORBIDDEN),
-        ('support_contact', 'test', status.HTTP_403_FORBIDDEN),
-        ('staff_contact', 'test', status.HTTP_200_OK),
-        ('anonymous_user', 'test', status.HTTP_403_FORBIDDEN),
-    ])
-    def test_view_salescontact(self, username, password, status_code):
-        url = '/login/'
-        data = {'username': username, 'password': password}
-        response = self.client.post(url, data, content_type='application/json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        url = '/salescontacts/'
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status_code)
-
-
-class ClientViewTest(TestCase):
-
-    fixtures = ['contenttype.json', 'group.json', 'permission.json']
-
-    @classmethod
-    def setUpTestData(cls):
-        # Create users
-        User.objects.create_user(
-            username='sales_contact',
-            password='test',
-        )
-        sales_contact = SalesContact.objects.create(user=User.objects.get(username='sales_contact'))
-        Client.objects.create(first_name="first",
-                              last_name="client",
-                              email="first.client@example.com",
-                              sales_contact=sales_contact)
-        User.objects.create_user(
-            username='support_contact',
-            password='test',
-        )
-        SupportContact.objects.create(user=User.objects.get(username='support_contact'))
-        User.objects.create_user(
-            username='staff_contact',
-            password='test',
-        )
-        StaffContact.objects.create(user=User.objects.get(username='staff_contact'))
-        User.objects.create_user(
-            username='anonymous_user',
-            password='test',
-        )
+    fixtures = ['contenttype.json', 'group.json', 'permission.json', 'user.json', 'salescontact.json', 'staffcontact.json', 'supportcontact.json']
 
     @pytest.mark.django_db
     def login(self, username, password):
@@ -202,10 +92,238 @@ class ClientViewTest(TestCase):
     @pytest.mark.order(1)
     @pytest.mark.django_db
     @parameterized.expand([
-        ('sales_contact', 'test', status.HTTP_200_OK),
-        ('support_contact', 'test', status.HTTP_200_OK),
-        ('staff_contact', 'test', status.HTTP_200_OK),
-        ('anonymous_user', 'test', status.HTTP_403_FORBIDDEN),
+        ('sales_contact_01', 'N3wpolo6', status.HTTP_403_FORBIDDEN),
+        ('support_contact_01', 'N3wpolo6', status.HTTP_403_FORBIDDEN),
+        ('staff_contact_01', 'N3wpolo6', status.HTTP_200_OK),
+        ('anonymous_user', 'N3wpolo6', status.HTTP_403_FORBIDDEN),
+    ])
+    def test_view_salescontact(self, username, password, status_code):
+        self.login(username, password)
+        url = '/salescontacts/'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status_code)
+
+    @pytest.mark.order(2)
+    @pytest.mark.django_db
+    @parameterized.expand([
+        ('sales_contact_01', 'N3wpolo6', status.HTTP_403_FORBIDDEN),
+        ('support_contact_01', 'N3wpolo6', status.HTTP_403_FORBIDDEN),
+        ('staff_contact_01', 'N3wpolo6', status.HTTP_201_CREATED),
+        ('anonymous_user', 'N3wpolo6', status.HTTP_403_FORBIDDEN),
+    ])
+    def test_add_salescontact(self, username, password, status_code):
+        self.login(username, password)
+        url = '/salescontacts/'
+        data = {'username': "sales_contact_02", 'password': "N3wpolo6"}
+        response = self.client.post(url, data, content_type='application/json')
+        self.assertEqual(response.status_code, status_code)
+
+    @pytest.mark.order(3)
+    @pytest.mark.django_db
+    @parameterized.expand([
+        ('sales_contact_01', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
+        ('support_contact_01', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
+        ('staff_contact_01', 'N3wpolo6', 1, status.HTTP_200_OK),
+        ('anonymous_user', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
+    ])
+    def test_change_salescontact(self, username, password, pk, status_code):
+        self.login(username, password)
+        url = f'/salescontacts/{pk}/'
+        sales_contact = SalesContact.objects.get(pk=pk)
+        data = SalesContactSerializer(sales_contact).data
+        response = self.client.put(url, data, content_type='application/json')
+        self.assertEqual(response.status_code, status_code)
+
+    @pytest.mark.order(4)
+    @pytest.mark.django_db
+    @parameterized.expand([
+        ('sales_contact_01', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
+        ('support_contact_01', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
+        ('staff_contact_01', 'N3wpolo6', 1, status.HTTP_204_NO_CONTENT),
+        ('anonymous_user', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
+    ])
+    def test_delete_salescontact(self, username, password, pk, status_code):
+        self.login(username, password)
+        url = f'/salescontacts/{pk}/'
+        sales_contact = SalesContact.objects.get(pk=pk)
+        data = SalesContactSerializer(sales_contact).data
+        response = self.client.delete(url, data, content_type='application/json')
+        self.assertEqual(response.status_code, status_code)
+        if status_code == status.HTTP_204_NO_CONTENT:
+            with self.assertRaises(SalesContact.DoesNotExist):
+                SalesContact.objects.get(pk=pk)
+
+
+class SupportContactViewTest(TestCase):
+
+    fixtures = ['contenttype.json', 'group.json', 'permission.json', 'user.json', 'salescontact.json', 'staffcontact.json', 'supportcontact.json']
+
+    @pytest.mark.django_db
+    def login(self, username, password):
+        url = '/login/'
+        data = {'username': username, 'password': password}
+        response = self.client.post(url, data, content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    @pytest.mark.order(1)
+    @pytest.mark.django_db
+    @parameterized.expand([
+        ('sales_contact_01', 'N3wpolo6', status.HTTP_403_FORBIDDEN),
+        ('support_contact_01', 'N3wpolo6', status.HTTP_403_FORBIDDEN),
+        ('staff_contact_01', 'N3wpolo6', status.HTTP_200_OK),
+        ('anonymous_user', 'N3wpolo6', status.HTTP_403_FORBIDDEN),
+    ])
+    def test_view_supportcontact(self, username, password, status_code):
+        self.login(username, password)
+        url = '/supportcontacts/'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status_code)
+
+    @pytest.mark.order(2)
+    @pytest.mark.django_db
+    @parameterized.expand([
+        ('sales_contact_01', 'N3wpolo6', status.HTTP_403_FORBIDDEN),
+        ('support_contact_01', 'N3wpolo6', status.HTTP_403_FORBIDDEN),
+        ('staff_contact_01', 'N3wpolo6', status.HTTP_201_CREATED),
+        ('anonymous_user', 'N3wpolo6', status.HTTP_403_FORBIDDEN),
+    ])
+    def test_add_supportcontact(self, username, password, status_code):
+        self.login(username, password)
+        url = '/supportcontacts/'
+        data = {'username': "support_contact_02", 'password': "N3wpolo6"}
+        response = self.client.post(url, data, content_type='application/json')
+        self.assertEqual(response.status_code, status_code)
+
+    @pytest.mark.order(3)
+    @pytest.mark.django_db
+    @parameterized.expand([
+        ('sales_contact_01', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
+        ('support_contact_01', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
+        ('staff_contact_01', 'N3wpolo6', 1, status.HTTP_200_OK),
+        ('anonymous_user', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
+    ])
+    def test_change_supportcontact(self, username, password, pk, status_code):
+        self.login(username, password)
+        url = f'/supportcontacts/{pk}/'
+        support_contact = SupportContact.objects.get(pk=pk)
+        data = SupportContactSerializer(support_contact).data
+        response = self.client.put(url, data, content_type='application/json')
+        self.assertEqual(response.status_code, status_code)
+
+    @pytest.mark.order(4)
+    @pytest.mark.django_db
+    @parameterized.expand([
+        ('sales_contact_01', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
+        ('support_contact_01', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
+        ('staff_contact_01', 'N3wpolo6', 1, status.HTTP_204_NO_CONTENT),
+        ('anonymous_user', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
+    ])
+    def test_delete_supportcontact(self, username, password, pk, status_code):
+        self.login(username, password)
+        url = f'/supportcontacts/{pk}/'
+        support_contact = SupportContact.objects.get(pk=pk)
+        data = SupportContactSerializer(support_contact).data
+        response = self.client.delete(url, data, content_type='application/json')
+        self.assertEqual(response.status_code, status_code)
+        if status_code == status.HTTP_204_NO_CONTENT:
+            with self.assertRaises(SupportContact.DoesNotExist):
+                SupportContact.objects.get(pk=pk)
+
+
+class StaffContactViewTest(TestCase):
+
+    fixtures = ['contenttype.json', 'group.json', 'permission.json', 'user.json', 'salescontact.json', 'staffcontact.json', 'supportcontact.json']
+
+    @pytest.mark.django_db
+    def login(self, username, password):
+        url = '/login/'
+        data = {'username': username, 'password': password}
+        response = self.client.post(url, data, content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    @pytest.mark.order(1)
+    @pytest.mark.django_db
+    @parameterized.expand([
+        ('sales_contact_01', 'N3wpolo6', status.HTTP_403_FORBIDDEN),
+        ('support_contact_01', 'N3wpolo6', status.HTTP_403_FORBIDDEN),
+        ('staff_contact_01', 'N3wpolo6', status.HTTP_200_OK),
+        ('anonymous_user', 'N3wpolo6', status.HTTP_403_FORBIDDEN),
+    ])
+    def test_view_staffcontact(self, username, password, status_code):
+        self.login(username, password)
+        url = '/staffcontacts/'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status_code)
+
+    @pytest.mark.order(2)
+    @pytest.mark.django_db
+    @parameterized.expand([
+        ('sales_contact_01', 'N3wpolo6', status.HTTP_403_FORBIDDEN),
+        ('support_contact_01', 'N3wpolo6', status.HTTP_403_FORBIDDEN),
+        ('staff_contact_01', 'N3wpolo6', status.HTTP_201_CREATED),
+        ('anonymous_user', 'N3wpolo6', status.HTTP_403_FORBIDDEN),
+    ])
+    def test_add_staffcontact(self, username, password, status_code):
+        self.login(username, password)
+        url = '/staffcontacts/'
+        data = {'username': "staff_contact_02", 'password': "N3wpolo6"}
+        response = self.client.post(url, data, content_type='application/json')
+        self.assertEqual(response.status_code, status_code)
+
+    @pytest.mark.order(3)
+    @pytest.mark.django_db
+    @parameterized.expand([
+        ('sales_contact_01', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
+        ('support_contact_01', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
+        ('staff_contact_01', 'N3wpolo6', 1, status.HTTP_200_OK),
+        ('anonymous_user', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
+    ])
+    def test_change_staffcontact(self, username, password, pk, status_code):
+        self.login(username, password)
+        url = f'/staffcontacts/{pk}/'
+        staff_contact = StaffContact.objects.get(pk=pk)
+        data = StaffContactSerializer(staff_contact).data
+        response = self.client.put(url, data, content_type='application/json')
+        self.assertEqual(response.status_code, status_code)
+
+    @pytest.mark.order(4)
+    @pytest.mark.django_db
+    @parameterized.expand([
+        ('sales_contact_01', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
+        ('support_contact_01', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
+        ('staff_contact_01', 'N3wpolo6', 1, status.HTTP_204_NO_CONTENT),
+        ('anonymous_user', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
+    ])
+    def test_delete_staffcontact(self, username, password, pk, status_code):
+        self.login(username, password)
+        url = f'/staffcontacts/{pk}/'
+        staff_contact = StaffContact.objects.get(pk=pk)
+        data = StaffContactSerializer(staff_contact).data
+        response = self.client.delete(url, data, content_type='application/json')
+        self.assertEqual(response.status_code, status_code)
+        if status_code == status.HTTP_204_NO_CONTENT:
+            with self.assertRaises(StaffContact.DoesNotExist):
+                StaffContact.objects.get(pk=pk)
+
+
+class ClientViewTest(TestCase):
+
+    fixtures = ['contenttype.json', 'group.json', 'permission.json', 'user.json', 'salescontact.json', 'staffcontact.json', 'supportcontact.json', 'client.json']
+
+    @pytest.mark.django_db
+    def login(self, username, password):
+        url = '/login/'
+        data = {'username': username, 'password': password}
+        response = self.client.post(url, data, content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    @pytest.mark.order(1)
+    @pytest.mark.django_db
+    @parameterized.expand([
+        ('sales_contact_01', 'N3wpolo6', status.HTTP_200_OK),
+        ('support_contact_01', 'N3wpolo6', status.HTTP_200_OK),
+        ('staff_contact_01', 'N3wpolo6', status.HTTP_200_OK),
+        ('anonymous_user', 'N3wpolo6', status.HTTP_403_FORBIDDEN),
     ])
     def test_view_client(self, username, password, status_code):
         self.login(username, password)
@@ -216,50 +334,39 @@ class ClientViewTest(TestCase):
     @pytest.mark.order(2)
     @pytest.mark.django_db
     @parameterized.expand([
-        ('sales_contact', 'test', status.HTTP_201_CREATED),
-        ('support_contact', 'test', status.HTTP_403_FORBIDDEN),
-        ('staff_contact', 'test', status.HTTP_201_CREATED),
-        ('anonymous_user', 'test', status.HTTP_403_FORBIDDEN),
+        ('sales_contact_01', 'N3wpolo6', status.HTTP_201_CREATED),
+        ('support_contact_01', 'N3wpolo6', status.HTTP_403_FORBIDDEN),
+        ('staff_contact_01', 'N3wpolo6', status.HTTP_201_CREATED),
+        ('anonymous_user', 'N3wpolo6', status.HTTP_403_FORBIDDEN),
     ])
     def test_add_client(self, username, password, status_code):
         self.login(username, password)
         url = '/clients/'
-        if username == 'sales_contact' or username == 'staff_contact':
-            user = User.objects.get(username='sales_contact')
-            sales_contact = SalesContact.objects.get(user=user)
-            data = {'first_name': 'new client',
-                    'last_name': f'by {username}',
-                    'email': 'second.client@example.com',
-                    'phone': '',
-                    'mobile': '',
-                    'sales_contact_id': sales_contact.id}
-        else:
-            data = {}
+        sales_contact = SalesContact.objects.get(pk=1)
+        data = {'first_name': 'new client',
+                'last_name': f'by {sales_contact.user.username}',
+                'email': 'second.client@example.com',
+                'phone': '',
+                'mobile': '',
+                'sales_contact_id': sales_contact.id}
         response = self.client.post(url, data, content_type='application/json')
         self.assertEqual(response.status_code, status_code)
 
     @pytest.mark.order(3)
     @pytest.mark.django_db
     @parameterized.expand([
-        ('sales_contact', 'test', '33489916502', '33786753421', status.HTTP_200_OK),
-        ('support_contact', 'test', '', '', status.HTTP_403_FORBIDDEN),
-        ('staff_contact', 'test', '33145913572', '33646258429', status.HTTP_200_OK),
-        ('anonymous_user', 'test', '', '', status.HTTP_403_FORBIDDEN),
+        ('sales_contact_01', 'N3wpolo6', 1, '33489916502', '33786753421', status.HTTP_200_OK),
+        ('support_contact_01', 'N3wpolo6', 1, '', '', status.HTTP_403_FORBIDDEN),
+        ('staff_contact_01', 'N3wpolo6', 1, '33145913572', '33646258429', status.HTTP_200_OK),
+        ('anonymous_user', 'N3wpolo6', 1, '', '', status.HTTP_403_FORBIDDEN),
     ])
-    def test_change_client(self, username, password, new_phone, new_mobile, status_code):
+    def test_change_client(self, username, password, pk, new_phone, new_mobile, status_code):
         self.login(username, password)
-        url = '/clients/1/'
-        if username == 'sales_contact' or username == 'staff_contact':
-            user = User.objects.get(username='sales_contact')
-            sales_contact = SalesContact.objects.get(user=user)
-            data = {'first_name': 'second',
-                    'last_name': 'client',
-                    'email': 'second.client@example.com',
-                    'phone': new_phone,
-                    'mobile': new_mobile,
-                    'sales_contact_id': sales_contact.id}
-        else:
-            data = {}
+        url = f'/clients/{pk}/'
+        client = Client.objects.get(pk=pk)
+        data = ClientSerializer(client).data
+        data['phone'] = new_phone
+        data['mobile'] = new_mobile
         response = self.client.put(url, data, content_type='application/json')
         self.assertEqual(response.status_code, status_code)
         if status_code == status.HTTP_200_OK:
@@ -269,10 +376,10 @@ class ClientViewTest(TestCase):
     @pytest.mark.order(4)
     @pytest.mark.django_db
     @parameterized.expand([
-        ('sales_contact', 'test', 1, status.HTTP_403_FORBIDDEN),
-        ('support_contact', 'test', 1, status.HTTP_403_FORBIDDEN),
-        ('staff_contact', 'test', 1, status.HTTP_204_NO_CONTENT),
-        ('anonymous_user', 'test', 1, status.HTTP_403_FORBIDDEN),
+        ('sales_contact_01', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
+        ('support_contact_01', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
+        ('staff_contact_01', 'N3wpolo6', 1, status.HTTP_204_NO_CONTENT),
+        ('anonymous_user', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
     ])
     def test_delete_client(self, username, password, pk, status_code):
         self.login(username, password)
@@ -280,48 +387,13 @@ class ClientViewTest(TestCase):
         response = self.client.delete(url, data='', content_type='application/json')
         self.assertEqual(response.status_code, status_code)
         if status_code == status.HTTP_204_NO_CONTENT:
-            self.assertEqual(Client.objects.count(), 0)
-        else:
-            self.assertEqual(Client.objects.count(), 1)
+            with self.assertRaises(Client.DoesNotExist):
+                Client.objects.get(pk=pk)
 
 
 class ContractViewTest(TestCase):
-    fixtures = ['contenttype.json', 'group.json', 'permission.json']
 
-    @classmethod
-    def setUpTestData(cls):
-        # Create users
-        User.objects.create_user(
-            username='sales_contact',
-            password='test',
-        )
-        sales_contact = SalesContact.objects.create(user=User.objects.get(username='sales_contact'))
-        client = Client.objects.create(first_name="first_name",
-                                       last_name="last_name",
-                                       email="first.client@example.com",
-                                       sales_contact=sales_contact)
-        User.objects.create_user(
-            username='support_contact',
-            password='test',
-        )
-        SupportContact.objects.create(user=User.objects.get(username='support_contact'))
-        User.objects.create_user(
-            username='staff_contact',
-            password='test',
-        )
-        StaffContact.objects.create(user=User.objects.get(username='staff_contact'))
-        User.objects.create_user(
-            username='anonymous_user',
-            password='test',
-        )
-        date_iso = "2021-12-01 00:00:00.000+00:00"
-        Contract.objects.create(
-            sales_contact=sales_contact,
-            client=client,
-            status=True,
-            amount=1000.00,
-            payment_due=datetime.fromisoformat(date_iso),
-        )
+    fixtures = ['contenttype.json', 'group.json', 'permission.json', 'user.json', 'salescontact.json', 'staffcontact.json', 'supportcontact.json', 'client.json', 'contract.json']
 
     @pytest.mark.django_db
     def login(self, username, password):
@@ -333,10 +405,10 @@ class ContractViewTest(TestCase):
     @pytest.mark.order(1)
     @pytest.mark.django_db
     @parameterized.expand([
-        ('sales_contact', 'test', status.HTTP_200_OK),
-        ('support_contact', 'test', status.HTTP_403_FORBIDDEN),
-        ('staff_contact', 'test', status.HTTP_200_OK),
-        ('anonymous_user', 'test', status.HTTP_403_FORBIDDEN),
+        ('sales_contact_01', 'N3wpolo6', status.HTTP_200_OK),
+        ('support_contact_01', 'N3wpolo6', status.HTTP_403_FORBIDDEN),
+        ('staff_contact_01', 'N3wpolo6', status.HTTP_200_OK),
+        ('anonymous_user', 'N3wpolo6', status.HTTP_403_FORBIDDEN),
     ])
     def test_view_contract(self, username, password, status_code):
         self.login(username, password)
@@ -347,48 +419,39 @@ class ContractViewTest(TestCase):
     @pytest.mark.order(2)
     @pytest.mark.django_db
     @parameterized.expand([
-        ('sales_contact', 'test', status.HTTP_201_CREATED),
-        ('support_contact', 'test', status.HTTP_403_FORBIDDEN),
-        ('staff_contact', 'test', status.HTTP_201_CREATED),
-        ('anonymous_user', 'test', status.HTTP_403_FORBIDDEN),
+        ('sales_contact_01', 'N3wpolo6', status.HTTP_201_CREATED),
+        ('support_contact_01', 'N3wpolo6', status.HTTP_403_FORBIDDEN),
+        ('staff_contact_01', 'N3wpolo6', status.HTTP_201_CREATED),
+        ('anonymous_user', 'N3wpolo6', status.HTTP_403_FORBIDDEN),
     ])
     def test_add_contract(self, username, password, status_code):
         self.login(username, password)
         url = '/contracts/'
-        if username == 'sales_contact' or username == 'staff_contact':
-            user = User.objects.get(username='sales_contact')
-            sales_contact = SalesContact.objects.get(user=user)
-            client = Client.objects.get(first_name="first_name", last_name="last_name")
-            date_iso = "2021-12-24 00:00:00.000+00:00"
-            data = {'status': False,
-                    'amount': 1000.00,
-                    'payment_due': datetime.fromisoformat(date_iso),
-                    'client_id': client.id,
-                    'sales_contact_id': sales_contact.id}
-        else:
-            data = {}
+        client = Client.objects.get(pk=1)
+        data = {'status': False,
+                'amount': 1000.00,
+                'payment_due': datetime.fromisoformat("2021-12-24 00:00:00.000+00:00"),
+                'client_id': client.id,
+                'sales_contact_id': client.sales_contact.id}
         response = self.client.post(url, data, content_type='application/json')
         self.assertEqual(response.status_code, status_code)
 
     @pytest.mark.order(3)
     @pytest.mark.django_db
     @parameterized.expand([
-        ('sales_contact', 'test', True, 2000.00, '2021-12-15 00:00:00.000+00:00', status.HTTP_200_OK),
-        ('support_contact', 'test', False, 0.00, '2021-12-15 00:00:00.000+00:00', status.HTTP_403_FORBIDDEN),
-        ('staff_contact', 'test', True, 2500.00, '2021-12-30 00:00:00.000+00:00', status.HTTP_200_OK),
-        ('anonymous_user', 'test', True, 2000.00, '2021-12-15 00:00:00.000+00:00', status.HTTP_403_FORBIDDEN),
+        ('sales_contact_01', 'N3wpolo6', 1, True, 2000.00, '2021-12-15 00:00:00.000+00:00', status.HTTP_403_FORBIDDEN),
+        ('support_contact_01', 'N3wpolo6', 1, False, 0.00, '2021-12-15 00:00:00.000+00:00', status.HTTP_403_FORBIDDEN),
+        ('staff_contact_01', 'N3wpolo6', 1, True, 2500.00, '2021-12-30 00:00:00.000+00:00', status.HTTP_200_OK),
+        ('anonymous_user', 'N3wpolo6', 1, True, 2000.00, '2021-12-15 00:00:00.000+00:00', status.HTTP_403_FORBIDDEN),
     ])
-    def test_change_contract(self, username, password, new_status, new_amount, new_date_iso, status_code):
+    def test_change_contract(self, username, password, pk, new_status, new_amount, new_date_iso, status_code):
         self.login(username, password)
-        url = '/contracts/1/'
-        if username == 'sales_contact' or username == 'staff_contact':
-            contract = Contract.objects.get(pk=1)
-            data = ContractSerializer(contract).data
-            data['status'] = new_status
-            data['amount'] = new_amount
-            data['payment_due'] = datetime.fromisoformat(new_date_iso)
-        else:
-            data = {}
+        url = f'/contracts/{pk}/'
+        contract = Contract.objects.get(pk=pk)
+        data = ContractSerializer(contract).data
+        data['status'] = new_status
+        data['amount'] = new_amount
+        data['payment_due'] = datetime.fromisoformat(new_date_iso)
         response = self.client.put(url, data, content_type='application/json')
         self.assertEqual(response.status_code, status_code)
         if status_code == status.HTTP_200_OK:
@@ -399,10 +462,10 @@ class ContractViewTest(TestCase):
     @pytest.mark.order(4)
     @pytest.mark.django_db
     @parameterized.expand([
-        ('sales_contact', 'test', 1, status.HTTP_403_FORBIDDEN),
-        ('support_contact', 'test', 1, status.HTTP_403_FORBIDDEN),
-        ('staff_contact', 'test', 1, status.HTTP_204_NO_CONTENT),
-        ('anonymous_user', 'test', 1, status.HTTP_403_FORBIDDEN),
+        ('sales_contact_01', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
+        ('support_contact_01', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
+        ('staff_contact_01', 'N3wpolo6', 1, status.HTTP_204_NO_CONTENT),
+        ('anonymous_user', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
     ])
     def test_delete_contract(self, username, password, pk, status_code):
         self.login(username, password)
@@ -410,49 +473,12 @@ class ContractViewTest(TestCase):
         response = self.client.delete(url, data='', content_type='application/json')
         self.assertEqual(response.status_code, status_code)
         if status_code == status.HTTP_204_NO_CONTENT:
-            self.assertEqual(Contract.objects.count(), 0)
-        else:
-            self.assertEqual(Contract.objects.count(), 1)
+            with self.assertRaises(Contract.DoesNotExist):
+                Contract.objects.get(pk=pk)
 
 
 class EventViewTest(TestCase):
-    fixtures = ['contenttype.json', 'group.json', 'permission.json', 'eventstatus.json']
-
-    @classmethod
-    def setUpTestData(cls):
-        # Create users
-        User.objects.create_user(
-            username='sales_contact',
-            password='test',
-        )
-        sales_contact = SalesContact.objects.create(user=User.objects.get(username='sales_contact'))
-        client = Client.objects.create(first_name="test event",
-                                       last_name="client",
-                                       email="first.client@example.com",
-                                       sales_contact=sales_contact)
-        User.objects.create_user(
-            username='support_contact',
-            password='test',
-        )
-        support_contact = SupportContact.objects.create(user=User.objects.get(username='support_contact'))
-        User.objects.create_user(
-            username='staff_contact',
-            password='test',
-        )
-        StaffContact.objects.create(user=User.objects.get(username='staff_contact'))
-        User.objects.create_user(
-            username='anonymous_user',
-            password='test',
-        )
-        date_iso = "2021-12-01 00:00:00.000+00:00"
-        Event.objects.create(
-            support_contact=support_contact,
-            client=client,
-            event_status=EventStatus.objects.get(status="C"),
-            attendees=1000,
-            event_date=datetime.fromisoformat(date_iso),
-            notes="test event",
-        )
+    fixtures = ['contenttype.json', 'group.json', 'permission.json', 'eventstatus.json',  'user.json', 'salescontact.json', 'staffcontact.json', 'supportcontact.json', 'client.json', 'contract.json', 'event.json']
 
     @pytest.mark.django_db
     def login(self, username,password):
@@ -464,10 +490,10 @@ class EventViewTest(TestCase):
     @pytest.mark.order(1)
     @pytest.mark.django_db
     @parameterized.expand([
-        ('sales_contact', 'test', status.HTTP_200_OK),
-        ('support_contact', 'test', status.HTTP_200_OK),
-        ('staff_contact', 'test', status.HTTP_200_OK),
-        ('anonymous_user', 'test', status.HTTP_403_FORBIDDEN),
+        ('sales_contact_01', 'N3wpolo6', status.HTTP_200_OK),
+        ('support_contact_01', 'N3wpolo6', status.HTTP_200_OK),
+        ('staff_contact_01', 'N3wpolo6', status.HTTP_200_OK),
+        ('anonymous_user', 'N3wpolo6', status.HTTP_403_FORBIDDEN),
     ])
     def test_view_event(self, username,password, status_code):
         self.login(username,password)
@@ -478,50 +504,40 @@ class EventViewTest(TestCase):
     @pytest.mark.order(2)
     @pytest.mark.django_db
     @parameterized.expand([
-        ('sales_contact', 'test', status.HTTP_201_CREATED),
-        ('support_contact', 'test', status.HTTP_403_FORBIDDEN),
-        ('staff_contact', 'test', status.HTTP_201_CREATED),
-        ('anonymous_user', 'test', status.HTTP_403_FORBIDDEN),
+        ('sales_contact_01', 'N3wpolo6', status.HTTP_201_CREATED),
+        ('support_contact_01', 'N3wpolo6', status.HTTP_403_FORBIDDEN),
+        ('staff_contact_01', 'N3wpolo6', status.HTTP_201_CREATED),
+        ('anonymous_user', 'N3wpolo6', status.HTTP_403_FORBIDDEN),
     ])
     def test_add_event(self, username,password, status_code):
-        self.login(username,password)
+        self.login(username, password)
         url = '/events/'
-        if username == 'sales_contact' or username == 'staff_contact':
-            user = User.objects.get(username='support_contact')
-            support_contact = SupportContact.objects.get(user=user)
-            client = Client.objects.get(first_name="test event", last_name="client")
-            date_iso = "2021-12-01 00:00:00.000+00:00"
-            data = {'attendees': 700,
-                    'notes': "test event",
-                    'event_date': datetime.fromisoformat(date_iso),
-                    'client_id': client.id,
-                    'event_status_id': EventStatus.objects.get(status="C").id,
-                    'support_contact_id': support_contact.id}
-        else:
-            data = {}
+        data = {'attendees': 700,
+                'notes': "test event",
+                'event_date': datetime.fromisoformat("2021-12-01 00:00:00.000+00:00"),
+                'client_id': 1,
+                'event_status_id': 1,
+                'support_contact_id': 1}
         response = self.client.post(url, data, content_type='application/json')
         self.assertEqual(response.status_code, status_code)
 
     @pytest.mark.order(3)
     @pytest.mark.django_db
     @parameterized.expand([
-        ('sales_contact', 'test', "P", 200, 'new notes', '2021-12-15 00:00:00.000+00:00', status.HTTP_200_OK),
-        ('support_contact', 'test', "E", 0, '', '2021-12-15 00:00:00.000+00:00', status.HTTP_403_FORBIDDEN),
-        ('staff_contact', 'test', "P", 500, 'event in progress', '2021-12-30 00:00:00.000+00:00', status.HTTP_200_OK),
-        ('anonymous_user', 'test', "E", 200, '', '2021-12-15 00:00:00.000+00:00', status.HTTP_403_FORBIDDEN),
+        ('sales_contact_01', 'N3wpolo6', 1, "P", 200, 'new notes', '2021-12-15 00:00:00.000+00:00', status.HTTP_403_FORBIDDEN),
+        ('support_contact_01', 'N3wpolo6', 1,  "E", 300, '', '2021-12-15 00:00:00.000+00:00', status.HTTP_200_OK),
+        ('staff_contact_01', 'N3wpolo6', 1, "P", 500, 'event in progress', '2021-12-30 00:00:00.000+00:00', status.HTTP_200_OK),
+        ('anonymous_user', 'N3wpolo6', 1, "E", 200, '', '2021-12-15 00:00:00.000+00:00', status.HTTP_403_FORBIDDEN),
     ])
-    def test_change_event(self, username,password, new_status, new_attendees, new_notes, new_date_iso, status_code):
+    def test_change_event(self, username, password, pk, new_status, new_attendees, new_notes, new_date_iso, status_code):
         self.login(username,password)
-        url = '/events/1/'
-        if username == 'sales_contact' or username == 'staff_contact':
-            event = Event.objects.get(pk=1)
-            data = EventSerializer(event).data
-            data['event_status_id'] = EventStatus.objects.get(status=new_status).id
-            data['attendees'] = new_attendees
-            data['notes'] = new_notes
-            data['event_date'] = datetime.fromisoformat(new_date_iso)
-        else:
-            data = {}
+        url = f'/events/{pk}/'
+        event = Event.objects.get(pk=pk)
+        data = EventSerializer(event).data
+        data['event_status_id'] = EventStatus.objects.get(status=new_status).id
+        data['attendees'] = new_attendees
+        data['notes'] = new_notes
+        data['event_date'] = datetime.fromisoformat(new_date_iso)
         response = self.client.put(url, data, content_type='application/json')
         self.assertEqual(response.status_code, status_code)
         if status_code == status.HTTP_200_OK:
@@ -533,10 +549,10 @@ class EventViewTest(TestCase):
     @pytest.mark.order(4)
     @pytest.mark.django_db
     @parameterized.expand([
-        ('sales_contact', 'test', 1, status.HTTP_403_FORBIDDEN),
-        ('support_contact', 'test', 1, status.HTTP_403_FORBIDDEN),
-        ('staff_contact', 'test', 1, status.HTTP_204_NO_CONTENT),
-        ('anonymous_user', 'test', 1, status.HTTP_403_FORBIDDEN),
+        ('sales_contact_01', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
+        ('support_contact_01', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
+        ('staff_contact_01', 'N3wpolo6', 1, status.HTTP_204_NO_CONTENT),
+        ('anonymous_user', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
     ])
     def test_delete_event(self, username, password, pk, status_code):
         self.login(username, password)
@@ -544,6 +560,5 @@ class EventViewTest(TestCase):
         response = self.client.delete(url, data='', content_type='application/json')
         self.assertEqual(response.status_code, status_code)
         if status_code == status.HTTP_204_NO_CONTENT:
-            self.assertEqual(Event.objects.count(), 0)
-        else:
-            self.assertEqual(Event.objects.count(), 1)
+            with self.assertRaises(Event.DoesNotExist):
+                Event.objects.get(pk=pk)

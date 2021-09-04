@@ -1,0 +1,15 @@
+[
+{
+    "model": "crm_api.contract",
+    "pk": 1,
+    "fields": {
+        "sales_contact": 1,
+        "client": 1,
+        "date_created": "2021-09-04T12:47:43.985Z",
+        "date_updated": "2021-09-04T12:47:43.985Z",
+        "status": true,
+        "amount": "2000.00",
+        "payment_due": "2021-11-30T23:00:00Z"
+    }
+}
+]

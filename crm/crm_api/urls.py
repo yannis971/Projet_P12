@@ -7,6 +7,8 @@ app_name = 'crm_api'
 
 router = DefaultRouter()
 router.register(r'salescontacts', views.SalesContactViewSet, basename='salescontacts')
+router.register(r'supportcontacts', views.SupportContactViewSet, basename='supportcontacts')
+router.register(r'staffcontacts', views.StaffContactViewSet, basename='staffcontacts')
 router.register(r'clients', views.ClientViewSet, basename='clients')
 router.register(r'contracts', views.ContractViewSet, basename='contracts')
 router.register(r'events', views.EventViewSet, basename='events')

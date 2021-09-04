@@ -1,0 +1,9 @@
+[
+{
+    "model": "crm_api.salescontact",
+    "pk": 1,
+    "fields": {
+        "user": 2
+    }
+}
+]
