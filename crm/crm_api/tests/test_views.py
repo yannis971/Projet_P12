@@ -1,13 +1,22 @@
 import pytest
 
 from datetime import datetime
-from django.urls import reverse
-from django.test import TestCase, TransactionTestCase
+from django.test import TestCase
 from rest_framework import status
 from crm_api.models import SalesContact, SupportContact, StaffContact, User, Client, Contract, EventStatus, Event
 from crm_api.serializers import SalesContactSerializer, SupportContactSerializer, StaffContactSerializer, ClientSerializer, ContractSerializer, EventSerializer
 
 from parameterized import parameterized
+
+
+class LoginInterface(TestCase):
+
+    @pytest.mark.django_db
+    def login(self, username, password):
+        url = '/login/'
+        data = {'username': username, 'password': password}
+        response = self.client.post(url, data, content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
 class LoginViewTest(TestCase):
@@ -78,16 +87,9 @@ class LogoutViewTest(TestCase):
         self.assertEqual(response.data['message'], "Your are now logged out")
 
 
-class SalesContactViewTest(TestCase):
+class SalesContactViewTest(LoginInterface):
 
     fixtures = ['contenttype.json', 'group.json', 'permission.json', 'user.json', 'salescontact.json', 'staffcontact.json', 'supportcontact.json']
-
-    @pytest.mark.django_db
-    def login(self, username, password):
-        url = '/login/'
-        data = {'username': username, 'password': password}
-        response = self.client.post(url, data, content_type='application/json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     @pytest.mark.order(1)
     @pytest.mark.django_db
@@ -154,16 +156,9 @@ class SalesContactViewTest(TestCase):
                 SalesContact.objects.get(pk=pk)
 
 
-class SupportContactViewTest(TestCase):
+class SupportContactViewTest(LoginInterface):
 
     fixtures = ['contenttype.json', 'group.json', 'permission.json', 'user.json', 'salescontact.json', 'staffcontact.json', 'supportcontact.json']
-
-    @pytest.mark.django_db
-    def login(self, username, password):
-        url = '/login/'
-        data = {'username': username, 'password': password}
-        response = self.client.post(url, data, content_type='application/json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     @pytest.mark.order(1)
     @pytest.mark.django_db
@@ -230,16 +225,9 @@ class SupportContactViewTest(TestCase):
                 SupportContact.objects.get(pk=pk)
 
 
-class StaffContactViewTest(TestCase):
+class StaffContactViewTest(LoginInterface):
 
     fixtures = ['contenttype.json', 'group.json', 'permission.json', 'user.json', 'salescontact.json', 'staffcontact.json', 'supportcontact.json']
-
-    @pytest.mark.django_db
-    def login(self, username, password):
-        url = '/login/'
-        data = {'username': username, 'password': password}
-        response = self.client.post(url, data, content_type='application/json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     @pytest.mark.order(1)
     @pytest.mark.django_db
@@ -306,16 +294,9 @@ class StaffContactViewTest(TestCase):
                 StaffContact.objects.get(pk=pk)
 
 
-class ClientViewTest(TestCase):
+class ClientViewTest(LoginInterface):
 
     fixtures = ['contenttype.json', 'group.json', 'permission.json', 'user.json', 'salescontact.json', 'staffcontact.json', 'supportcontact.json', 'client.json']
-
-    @pytest.mark.django_db
-    def login(self, username, password):
-        url = '/login/'
-        data = {'username': username, 'password': password}
-        response = self.client.post(url, data, content_type='application/json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     @pytest.mark.order(1)
     @pytest.mark.django_db
@@ -391,16 +372,9 @@ class ClientViewTest(TestCase):
                 Client.objects.get(pk=pk)
 
 
-class ContractViewTest(TestCase):
+class ContractViewTest(LoginInterface):
 
     fixtures = ['contenttype.json', 'group.json', 'permission.json', 'user.json', 'salescontact.json', 'staffcontact.json', 'supportcontact.json', 'client.json', 'contract.json']
-
-    @pytest.mark.django_db
-    def login(self, username, password):
-        url = '/login/'
-        data = {'username': username, 'password': password}
-        response = self.client.post(url, data, content_type='application/json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     @pytest.mark.order(1)
     @pytest.mark.django_db
@@ -477,15 +451,9 @@ class ContractViewTest(TestCase):
                 Contract.objects.get(pk=pk)
 
 
-class EventViewTest(TestCase):
-    fixtures = ['contenttype.json', 'group.json', 'permission.json', 'eventstatus.json',  'user.json', 'salescontact.json', 'staffcontact.json', 'supportcontact.json', 'client.json', 'contract.json', 'event.json']
+class EventViewTest(LoginInterface):
 
-    @pytest.mark.django_db
-    def login(self, username,password):
-        url = '/login/'
-        data = {'username': username, 'password': password}
-        response = self.client.post(url, data, content_type='application/json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+    fixtures = ['contenttype.json', 'group.json', 'permission.json', 'eventstatus.json',  'user.json', 'salescontact.json', 'staffcontact.json', 'supportcontact.json', 'client.json', 'contract.json', 'event.json']
 
     @pytest.mark.order(1)
     @pytest.mark.django_db
