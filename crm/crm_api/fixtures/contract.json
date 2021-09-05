@@ -11,5 +11,31 @@
         "amount": "2000.00",
         "payment_due": "2021-11-30T23:00:00Z"
     }
+},
+{
+    "model": "crm_api.contract",
+    "pk": 2,
+    "fields": {
+        "sales_contact": 2,
+        "client": 1,
+        "date_created": "2021-09-05T12:21:00.841Z",
+        "date_updated": "2021-09-05T12:21:00.841Z",
+        "status": false,
+        "amount": "800.00",
+        "payment_due": "2021-11-11T13:18:14Z"
+    }
+},
+{
+    "model": "crm_api.contract",
+    "pk": 3,
+    "fields": {
+        "sales_contact": 2,
+        "client": 2,
+        "date_created": "2021-09-05T12:22:07.616Z",
+        "date_updated": "2021-09-05T12:22:07.616Z",
+        "status": false,
+        "amount": "900.00",
+        "payment_due": "2021-11-30T13:18:14Z"
+    }
 }
 ]

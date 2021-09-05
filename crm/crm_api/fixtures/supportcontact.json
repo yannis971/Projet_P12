@@ -5,5 +5,12 @@
     "fields": {
         "user": 4
     }
+},
+{
+    "model": "crm_api.supportcontact",
+    "pk": 2,
+    "fields": {
+        "user": 8
+    }
 }
 ]

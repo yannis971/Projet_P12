@@ -12,5 +12,19 @@
         "date_created": "2021-09-04T12:46:10.816Z",
         "date_updated": "2021-09-04T12:46:10.816Z"
     }
+},
+{
+    "model": "crm_api.client",
+    "pk": 2,
+    "fields": {
+        "first_name": "test filters 01",
+        "last_name": "client",
+        "email": "test_filters_01@example.com",
+        "phone": "",
+        "mobile": "",
+        "sales_contact": 2,
+        "date_created": "2021-09-05T11:17:03.194Z",
+        "date_updated": "2021-09-05T11:17:03.194Z"
+    }
 }
 ]

@@ -32,6 +32,7 @@ from crm_api.models import SalesContact, SupportContact, StaffContact, Client, C
 
 from crm_api.decorators import route_permissions
 
+from crm_api.filters import ClientFilter, ContractFilter, EventFilter
 from crm_api.serializers import ClientSerializer, ContractSerializer, EventSerializer, UserSerializer, SalesContactSerializer, SupportContactSerializer, StaffContactSerializer, User
 
 # Create your views here.
@@ -222,8 +223,8 @@ class ClientViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
     """
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
+    filter_backends = [ClientFilter]
     redirect_field_name = None
-
 
     @route_permissions('crm_api.add_client')
     def create(self, request, *args, **kwargs):
@@ -258,6 +259,7 @@ class ContractViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
     """
     queryset = Contract.objects.all()
     serializer_class = ContractSerializer
+    filter_backends = [ContractFilter]
     redirect_field_name = None
 
     @route_permissions('crm_api.add_contract')
@@ -293,6 +295,7 @@ class EventViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
     """
     queryset = Event.objects.all()
     serializer_class = EventSerializer
+    filter_backends = [EventFilter]
     redirect_field_name = None
 
     @route_permissions('crm_api.add_event')

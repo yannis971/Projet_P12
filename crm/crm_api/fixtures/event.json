@@ -12,5 +12,19 @@
         "event_date": "2021-11-30T23:00:00Z",
         "notes": ""
     }
+},
+{
+    "model": "crm_api.event",
+    "pk": 2,
+    "fields": {
+        "client": 2,
+        "date_created": "2021-09-05T12:23:32.112Z",
+        "date_updated": "2021-09-05T12:23:32.112Z",
+        "support_contact": 2,
+        "event_status": 1,
+        "attendees": 200,
+        "event_date": "2021-11-30T13:18:14Z",
+        "notes": "test"
+    }
 }
 ]
