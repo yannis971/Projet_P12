@@ -12,15 +12,17 @@ class ClientSerializer(serializers.ModelSerializer):
     """
     Client serializer
     """
-    sales_contact_id = serializers.ReadOnlyField(source='sales_contact.id')
+    # sales_contact_id = serializers.ReadOnlyField(source='sales_contact.id')
 
     class Meta:
         model = Client
-        fields = ['first_name', 'last_name',
-                  'email', 'phone', 'mobile', 'sales_contact_id']
+        fields = '__all__'
+        # exclude = ['id', ]
+        # fields = ['first_name', 'last_name',
+        #          'email', 'phone', 'mobile', 'sales_contact_id']
 
     def save(self, **kwargs):
-        the_sales_contact = get_object_or_404(SalesContact, pk=self._kwargs['data']['sales_contact_id'])
+        the_sales_contact = get_object_or_404(SalesContact, pk=self._kwargs['data']['sales_contact'])
         return super().save(sales_contact=the_sales_contact)
 
 

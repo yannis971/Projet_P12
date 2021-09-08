@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'bootstrap4',
     'crm_api.apps.CrmApiConfig',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -152,6 +153,8 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.TemplateHTMLRenderer'
     ],
+    # Filter backends
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 }
 
 JWT_AUTH = {

@@ -1,6 +1,7 @@
 from django.http import request
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.contrib.auth.views import LoginView
@@ -19,16 +20,19 @@ from rest_framework import generics, mixins, views
 from rest_framework import status
 from rest_framework import viewsets
 
+from django_filters.rest_framework import DjangoFilterBackend
+
+from rest_framework import filters
 from rest_framework.exceptions import NotFound, ValidationError
 
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from rest_framework_jwt.settings import api_settings
 
 from crm_api.models import SalesContact, SupportContact, StaffContact, Client, Contract, Event
 
-# from crm_api.permissions import IsAuthenticatedStaffMember
+
 
 from crm_api.decorators import route_permissions
 
@@ -40,6 +44,13 @@ from crm_api.serializers import ClientSerializer, ContractSerializer, EventSeria
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+
+
+class CsrfExemptSessionAuthentication(SessionAuthentication):
+
+    def enforce_csrf(self, request):
+        return  # To not perform the csrf check previously happening
 
 @login_required
 def home(request):
@@ -52,6 +63,7 @@ def home(request):
 
 class LoginView(generics.GenericAPIView):
 
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
     permission_classes = (AllowAny,)
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -223,7 +235,9 @@ class ClientViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
     """
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
-    filter_backends = [ClientFilter]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, ClientFilter]
+    filterset_fields = ['sales_contact',]
+    search_fields = ['first_name', 'last_name', 'email']
     redirect_field_name = None
 
     @route_permissions('crm_api.add_client')
@@ -259,7 +273,9 @@ class ContractViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
     """
     queryset = Contract.objects.all()
     serializer_class = ContractSerializer
-    filter_backends = [ContractFilter]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, ContractFilter]
+    filterset_fields = ['sales_contact', 'client']
+    # search_fields = ['first_name', 'last_name', 'email']
     redirect_field_name = None
 
     @route_permissions('crm_api.add_contract')
