@@ -1,3 +1,9 @@
+# import the logging library
+import logging
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
+
 from django.http import request
 from django.core import management
 from django.shortcuts import render
@@ -82,6 +88,7 @@ class LoginView(generics.GenericAPIView):
                     user_details['username'] = user.username
                     user_details['token'] = token
                     login(request, user)
+                    logger.info(msg="{user.username} logged in")
                     return Response(user_details, status=status.HTTP_200_OK)
                 else:
                     res = {
@@ -107,6 +114,7 @@ class LogoutView(generics.GenericAPIView):
         details = dict()
         details['username'] = request.user.username
         details['message'] = "Your are now logged out"
+        logger.info(msg="{request.user.username} logged out")
         logout(request)
         return Response(details, status=status.HTTP_200_OK)
 

@@ -168,3 +168,45 @@ JWT_AUTH = {
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/login/'
 LOGOUT_URL = '/logout/'
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {asctime} {message}',
+            'style': '{',
+        },
+        'customized': {
+            'format': '[{pathname}:{funcName}:{lineno:d}] {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'crm_api_file': {
+            'class': 'logging.FileHandler',
+            'filename': 'crm_api/logs/crm_api.info.log',
+            'formatter': 'verbose',
+        },
+        'django_file': {
+            'class': 'logging.FileHandler',
+            'filename': 'crm_api/logs/django.info.log',
+            'formatter': 'simple',
+        },
+    },
+    'loggers': {
+        'crm_api': {
+            'handlers': ['crm_api_file'],
+            'level': 'INFO',
+        },
+        'django': {
+            'handlers': ['django_file'],
+            'level': 'INFO',
+        },
+    }
+}
