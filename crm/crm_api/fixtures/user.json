@@ -4,7 +4,7 @@
     "pk": 1,
     "fields": {
         "password": "pbkdf2_sha256$260000$ou95bzEQB9mR1AjYDSlsKM$UZKpes6RzSIMh1KbiszzLYgfVYWtURGWK45EV3ZrVCU=",
-        "last_login": "2021-09-05T11:10:36.631Z",
+        "last_login": "2021-09-06T13:21:30.490Z",
         "is_superuser": true,
         "username": "yannis",
         "first_name": "",
@@ -22,7 +22,7 @@
     "pk": 2,
     "fields": {
         "password": "pbkdf2_sha256$260000$FF7S65h1ZPJsMcfg08gWnt$tNDCknqwR4UsGuGMx2TDhRpF14pSC75yGHwpCRrYATg=",
-        "last_login": null,
+        "last_login": "2021-09-12T08:18:00.252Z",
         "is_superuser": false,
         "username": "sales_contact_01",
         "first_name": "",
@@ -42,7 +42,7 @@
     "pk": 3,
     "fields": {
         "password": "pbkdf2_sha256$260000$LtOBtJpjrnGtpkGflRv3Kj$L5MlIQ2yAbK9DiAvzkwYByWelpNO2T3iNvseizT+oKg=",
-        "last_login": null,
+        "last_login": "2021-09-12T11:32:50.895Z",
         "is_superuser": false,
         "username": "staff_contact_01",
         "first_name": "",
@@ -62,7 +62,7 @@
     "pk": 4,
     "fields": {
         "password": "pbkdf2_sha256$260000$j7tD3lPOmM62wrsFUz0Uvk$xFaFt8dxORuAmKu33KH5aAZkTzHwNFkLDwZT4xuUP4w=",
-        "last_login": null,
+        "last_login": "2021-09-05T15:07:09.845Z",
         "is_superuser": false,
         "username": "support_contact_01",
         "first_name": "",
@@ -82,7 +82,7 @@
     "pk": 5,
     "fields": {
         "password": "pbkdf2_sha256$260000$eqUNMff1PTsjxtoVOau4HV$AmHmm6si7bdQ4iFvsnL7fLfXfduMUygoF/YJeUF7pYw=",
-        "last_login": null,
+        "last_login": "2021-09-12T09:46:41.680Z",
         "is_superuser": false,
         "username": "anonymous_user",
         "first_name": "",

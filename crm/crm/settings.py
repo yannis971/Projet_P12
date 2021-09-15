@@ -160,7 +160,7 @@ REST_FRAMEWORK = {
 JWT_AUTH = {
     'JWT_VERIFY': True,
     'JWT_VERIFY_EXPIRATION': True,
-    'JWT_EXPIRATION_DELTA': timedelta(days=0, hours=4, minutes=00),
+    'JWT_EXPIRATION_DELTA': timedelta(minutes=10),
     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
 }
 

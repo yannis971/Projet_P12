@@ -1,0 +1,160 @@
+[
+{
+    "model": "crm_api.salescontact",
+    "pk": 1,
+    "fields": {
+        "user": 2
+    }
+},
+{
+    "model": "crm_api.salescontact",
+    "pk": 2,
+    "fields": {
+        "user": 6
+    }
+},
+{
+    "model": "crm_api.staffcontact",
+    "pk": 1,
+    "fields": {
+        "user": 3
+    }
+},
+{
+    "model": "crm_api.staffcontact",
+    "pk": 2,
+    "fields": {
+        "user": 7
+    }
+},
+{
+    "model": "crm_api.supportcontact",
+    "pk": 1,
+    "fields": {
+        "user": 4
+    }
+},
+{
+    "model": "crm_api.supportcontact",
+    "pk": 2,
+    "fields": {
+        "user": 8
+    }
+},
+{
+    "model": "crm_api.client",
+    "pk": 1,
+    "fields": {
+        "first_name": "test",
+        "last_name": "client",
+        "email": "test.client@exmaple.com",
+        "phone": "",
+        "mobile": "",
+        "sales_contact": 1,
+        "date_created": "2021-09-04T12:46:10.816Z",
+        "date_updated": "2021-09-04T12:46:10.816Z"
+    }
+},
+{
+    "model": "crm_api.client",
+    "pk": 2,
+    "fields": {
+        "first_name": "test filters 01",
+        "last_name": "client",
+        "email": "test_filters_01@example.com",
+        "phone": "",
+        "mobile": "",
+        "sales_contact": 2,
+        "date_created": "2021-09-05T11:17:03.194Z",
+        "date_updated": "2021-09-05T11:17:03.194Z"
+    }
+},
+{
+    "model": "crm_api.contract",
+    "pk": 1,
+    "fields": {
+        "sales_contact": 1,
+        "client": 1,
+        "date_created": "2021-09-04T12:47:43.985Z",
+        "date_updated": "2021-09-04T12:47:43.985Z",
+        "status": true,
+        "amount": "2000.00",
+        "payment_due": "2021-11-30T23:00:00Z"
+    }
+},
+{
+    "model": "crm_api.contract",
+    "pk": 2,
+    "fields": {
+        "sales_contact": 2,
+        "client": 1,
+        "date_created": "2021-09-05T12:21:00.841Z",
+        "date_updated": "2021-09-05T12:21:00.841Z",
+        "status": false,
+        "amount": "800.00",
+        "payment_due": "2021-11-11T13:18:14Z"
+    }
+},
+{
+    "model": "crm_api.contract",
+    "pk": 3,
+    "fields": {
+        "sales_contact": 2,
+        "client": 2,
+        "date_created": "2021-09-05T12:22:07.616Z",
+        "date_updated": "2021-09-05T12:22:07.616Z",
+        "status": false,
+        "amount": "900.00",
+        "payment_due": "2021-11-30T13:18:14Z"
+    }
+},
+{
+    "model": "crm_api.eventstatus",
+    "pk": 1,
+    "fields": {
+        "status": "C"
+    }
+},
+{
+    "model": "crm_api.eventstatus",
+    "pk": 2,
+    "fields": {
+        "status": "E"
+    }
+},
+{
+    "model": "crm_api.eventstatus",
+    "pk": 3,
+    "fields": {
+        "status": "P"
+    }
+},
+{
+    "model": "crm_api.event",
+    "pk": 1,
+    "fields": {
+        "client": 1,
+        "date_created": "2021-09-04T12:48:59.255Z",
+        "date_updated": "2021-09-04T12:48:59.255Z",
+        "support_contact": 1,
+        "event_status": 1,
+        "attendees": 500,
+        "event_date": "2021-11-30T23:00:00Z",
+        "notes": ""
+    }
+},
+{
+    "model": "crm_api.event",
+    "pk": 2,
+    "fields": {
+        "client": 2,
+        "date_created": "2021-09-05T12:23:32.112Z",
+        "date_updated": "2021-09-05T12:23:32.112Z",
+        "support_contact": 2,
+        "event_status": 1,
+        "attendees": 200,
+        "event_date": "2021-11-30T13:18:14Z",
+        "notes": "test"
+    }
+}
+]

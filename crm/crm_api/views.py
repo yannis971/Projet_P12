@@ -1,4 +1,5 @@
 from django.http import request
+from django.core import management
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
@@ -30,7 +31,7 @@ from rest_framework.response import Response
 
 from rest_framework_jwt.settings import api_settings
 
-from crm_api.models import SalesContact, SupportContact, StaffContact, Client, Contract, Event
+from crm_api.models import SalesContact, SupportContact, StaffContact, Client, Contract, Event, EventStatus
 
 
 
@@ -116,6 +117,10 @@ def create_user(request):
     return the_user_serializer.save()
 
 
+def get_user(request):
+    return get_object_or_404(User, username=request.data['username'])
+
+
 class SalesContactViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
     """
     class SalesContactViewSet manages the following endpoints :
@@ -142,10 +147,14 @@ class SalesContactViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
 
     @route_permissions('crm_api.change_salescontact')
     def update(self, request, *args, **kwargs):
+        the_user = get_user(request)
+        request.data['user_id'] = the_user.id
         return super().update(request, *args, **kwargs)
 
     @route_permissions('crm_api.change_salescontact')
     def partial_update(self, request, *args, **kwargs):
+        the_user = get_user(request)
+        request.data['user_id'] = the_user.id
         return super().partial_update(request, *args, **kwargs)
 
     @route_permissions('crm_api.delete_salescontact')
@@ -179,10 +188,14 @@ class SupportContactViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
 
     @route_permissions('crm_api.change_supportcontact')
     def update(self, request, *args, **kwargs):
+        the_user = get_user(request)
+        request.data['user_id'] = the_user.id
         return super().update(request, *args, **kwargs)
 
     @route_permissions('crm_api.change_supportcontact')
     def partial_update(self, request, *args, **kwargs):
+        the_user = get_user(request)
+        request.data['user_id'] = the_user.id
         return super().partial_update(request, *args, **kwargs)
 
     @route_permissions('crm_api.delete_supportcontact')
@@ -216,10 +229,14 @@ class StaffContactViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
 
     @route_permissions('crm_api.change_staffcontact')
     def update(self, request, *args, **kwargs):
+        the_user = get_user(request)
+        request.data['user_id'] = the_user.id
         return super().update(request, *args, **kwargs)
 
     @route_permissions('crm_api.change_staffcontact')
     def partial_update(self, request, *args, **kwargs):
+        the_user = get_user(request)
+        request.data['user_id'] = the_user.id
         return super().partial_update(request, *args, **kwargs)
 
     @route_permissions('crm_api.delete_staffcontact')
@@ -254,10 +271,14 @@ class ClientViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
 
     @route_permissions('crm_api.change_client')
     def update(self, request, *args, **kwargs):
+        the_client = self.get_object()
+        request.data['sales_contact_id'] = the_client.sales_contact.id
         return super().update(request, *args, **kwargs)
 
     @route_permissions('crm_api.change_client')
     def partial_update(self, request, *args, **kwargs):
+        the_client = self.get_object()
+        request.data['sales_contact_id'] = the_client.sales_contact.id
         return super().partial_update(request, *args, **kwargs)
 
     @route_permissions('crm_api.delete_client')
@@ -275,7 +296,6 @@ class ContractViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
     serializer_class = ContractSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, ContractFilter]
     filterset_fields = ['sales_contact', 'client']
-    # search_fields = ['first_name', 'last_name', 'email']
     redirect_field_name = None
 
     @route_permissions('crm_api.add_contract')
@@ -292,10 +312,16 @@ class ContractViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
 
     @route_permissions('crm_api.change_contract')
     def update(self, request, *args, **kwargs):
+        the_contract = self.get_object()
+        request.data['client_id'] = the_contract.client.id
+        request.data['sales_contact_id'] = the_contract.sales_contact.id
         return super().update(request, *args, **kwargs)
 
     @route_permissions('crm_api.change_contract')
     def partial_update(self, request, *args, **kwargs):
+        the_contract = self.get_object()
+        request.data['client_id'] = the_contract.client.id
+        request.data['sales_contact_id'] = the_contract.sales_contact.id
         return super().partial_update(request, *args, **kwargs)
 
     @route_permissions('crm_api.delete_contract')
@@ -311,11 +337,16 @@ class EventViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
     """
     queryset = Event.objects.all()
     serializer_class = EventSerializer
-    filter_backends = [EventFilter]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, EventFilter]
+    filterset_fields = ['support_contact', 'client', 'event_status']
+    search_fields = ['notes', ]
     redirect_field_name = None
 
     @route_permissions('crm_api.add_event')
     def create(self, request, *args, **kwargs):
+        if 'event_status_id' not in request.data:
+            the_event_status = EventStatus.objects.get(status=EventStatus.Status.CREATED)
+            request.data['event_status_id'] = the_event_status.id
         return super().create(request, *args, **kwargs)
 
     @route_permissions('crm_api.view_event')
@@ -328,12 +359,49 @@ class EventViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
 
     @route_permissions('crm_api.change_event')
     def update(self, request, *args, **kwargs):
+        the_event = self.get_object()
+        request.data['client_id'] = the_event.client.id
+        request.data['support_contact_id'] = the_event.support_contact.id
+        if 'event_status_id' not in request.data:
+            request.data['event_status_id'] = the_event.event_status.id
         return super().update(request, *args, **kwargs)
 
     @route_permissions('crm_api.change_event')
     def partial_update(self, request, *args, **kwargs):
+        the_event = self.get_object()
+        request.data['client_id'] = the_event.client.id
+        request.data['support_contact_id'] = the_event.support_contact.id
+        if 'event_status_id' not in request.data:
+            request.data['event_status_id'] = the_event.event_status.id
         return super().partial_update(request, *args, **kwargs)
 
     @route_permissions('crm_api.delete_event')
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
+
+
+class InitDataBaseView(generics.GenericAPIView):
+
+    def get(self, request, **kwargs):
+        if request.user and request.user.is_authenticated:
+            Event.objects.all().delete()
+            EventStatus.objects.all().delete()
+            Contract.objects.all().delete()
+            Client.objects.all().delete()
+            SalesContact.objects.all().delete()
+            SupportContact.objects.all().delete()
+            StaffContact.objects.all().delete()
+            management.call_command('sqlsequencereset', 'crm_api', verbosity=0)
+
+            User.objects.all().delete()
+            management.call_command('sqlsequencereset', 'auth', verbosity=0)
+
+            management.call_command('loaddata', 'user.json', verbosity=0)
+            management.call_command('loaddata', 'crm_api.json', verbosity=0)
+
+            res = {
+                'message': 'database has been initialized'}
+
+            return Response(res, status=status.HTTP_200_OK)
+        else:
+            return Response({}, status=status.HTTP_403_FORBIDDEN)
