@@ -69,6 +69,11 @@ class ClientSerializer(serializers.ModelSerializer):
         model = Client
         exclude = ['sales_contact', ]
 
+    def validate(self, data):
+        if 'sales_contact_id' not in self._kwargs['data']:
+            raise serializers.ValidationError(detail="sales_contact_id is required in data", code='invalid')
+        return data
+
     def save(self, **kwargs):
         the_sales_contact = get_object_or_404(SalesContact, pk=self._kwargs['data']['sales_contact_id'])
         return super().save(sales_contact=the_sales_contact)
@@ -84,8 +89,12 @@ class ContractSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contract
         exclude = ['sales_contact', 'client']
-        #fields = ['sales_contact_id', 'client_id',
-        #          'status', 'amount', 'payment_due']
+
+    def validate(self, data):
+        if 'sales_contact_id' not in self._kwargs['data'] or 'client_id' not in self._kwargs['data']:
+            raise serializers.ValidationError(detail="sales_contact_id and client_id are required in data",
+                                              code='invalid')
+        return data
 
     def save(self, **kwargs):
         the_sales_contact = get_object_or_404(SalesContact, pk=self._kwargs['data']['sales_contact_id'])
@@ -104,14 +113,18 @@ class EventSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Event
-        # exclude = ['support_contact', 'client', 'event_status']
         fields = ['id', 'client_id', 'support_contact_id',
                   'event_status_id', 'event_status_value', 'attendees', 'event_date', 'notes', 'date_created', 'date_updated']
+
+    def validate(self, data):
+        if 'support_contact_id' not in self._kwargs['data'] \
+                or 'client_id' not in self._kwargs['data']:
+            raise serializers.ValidationError(detail="support_contact_id and client_id are required in data",
+                                              code='invalid')
+        return data
 
     def save(self, **kwargs):
         the_support_contact = get_object_or_404(SupportContact, pk=self._kwargs['data']['support_contact_id'])
         the_client = get_object_or_404(Client, pk=self._kwargs['data']['client_id'])
         the_event_status = get_object_or_404(EventStatus, pk=self._kwargs['data']['event_status_id'])
         return super().save(support_contact=the_support_contact, client=the_client, event_status=the_event_status)
-
-

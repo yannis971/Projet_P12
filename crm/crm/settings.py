@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'bootstrap4',
-    'crm_api.apps.CrmApiConfig',
+    'crm_api',
     'django_filters',
 ]
 
@@ -175,7 +175,8 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            # 'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'format': '[{levelname}:{asctime}:{module}:{lineno:d}] : {message}',
             'style': '{',
         },
         'simple': {

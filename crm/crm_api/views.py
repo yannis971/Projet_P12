@@ -88,7 +88,7 @@ class LoginView(generics.GenericAPIView):
                     user_details['username'] = user.username
                     user_details['token'] = token
                     login(request, user)
-                    logger.info(msg="{user.username} logged in")
+                    logger.info(msg=f"{self.__class__.__name__} : {user.username} logged in")
                     return Response(user_details, status=status.HTTP_200_OK)
                 else:
                     res = {
@@ -114,7 +114,7 @@ class LogoutView(generics.GenericAPIView):
         details = dict()
         details['username'] = request.user.username
         details['message'] = "Your are now logged out"
-        logger.info(msg="{request.user.username} logged out")
+        logger.info(msg=f"{self.__class__.__name__} : {request.user.username} logged out")
         logout(request)
         return Response(details, status=status.HTTP_200_OK)
 
