@@ -9,7 +9,7 @@ from crm_api.serializers import SalesContactSerializer, SupportContactSerializer
 from parameterized import parameterized
 
 
-class LoginInterface(TestCase):
+class LoginInterface:
 
     @pytest.mark.django_db
     def login(self, username, password):
@@ -51,18 +51,21 @@ class LoginViewTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     @parameterized.expand([
-        ("DELETE",),
-        ("PATCH", ),
-        ("PUT",),
+        ("delete",),
+        ("patch", ),
+        ("put",),
     ])
     def test_method_not_allowed(self, method):
         url = '/login/'
-        if method == "DELETE":
+        response = getattr(self.client, method)(url)
+        """
+        if method == "delete":
             response = self.client.delete(url)
-        elif method == "PUT":
+        elif method == "put":
             response = self.client.put(url)
         else:
             response = self.client.patch(url)
+        """
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
@@ -87,7 +90,7 @@ class LogoutViewTest(TestCase):
         self.assertEqual(response.data['message'], "Your are now logged out")
 
 
-class SalesContactViewTest(LoginInterface):
+class SalesContactViewTest(TestCase, LoginInterface):
 
     fixtures = ['contenttype.json', 'group.json', 'permission.json', 'user.json', 'salescontact.json', 'staffcontact.json', 'supportcontact.json']
 
@@ -116,25 +119,27 @@ class SalesContactViewTest(LoginInterface):
     def test_add_salescontact(self, username, password, status_code):
         self.login(username, password)
         url = '/salescontacts/'
-        data = {'username': "sales_contact_02", 'password': "N3wpolo6"}
+        data = {'user': {'username': "sales_contact_02", 'password': "N3wpolo6"}}
         response = self.client.post(url, data, content_type='application/json')
         self.assertEqual(response.status_code, status_code)
 
     @pytest.mark.order(3)
     @pytest.mark.django_db
     @parameterized.expand([
-        ('sales_contact_01', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
-        ('support_contact_01', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
-        ('staff_contact_01', 'N3wpolo6', 1, status.HTTP_200_OK),
-        ('anonymous_user', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
+        ('sales_contact_01', 'N3wpolo6', 'Tk1nt3r0K', 1, status.HTTP_403_FORBIDDEN),
+        ('support_contact_01', 'N3wpolo6', 'Tk1nt3r0K', 1, status.HTTP_403_FORBIDDEN),
+        ('staff_contact_01', 'N3wpolo6', 'Tk1nt3r0K', 1, status.HTTP_200_OK),
+        ('anonymous_user', 'N3wpolo6', 'Tk1nt3r0K', 1, status.HTTP_403_FORBIDDEN),
     ])
-    def test_change_salescontact(self, username, password, pk, status_code):
+    def test_change_salescontact(self, username, password, new_password, pk, status_code):
         self.login(username, password)
         url = f'/salescontacts/{pk}/'
         sales_contact = SalesContact.objects.get(pk=pk)
-        data = SalesContactSerializer(sales_contact).data
+        data = {'user': {'password': new_password} }
         response = self.client.put(url, data, content_type='application/json')
         self.assertEqual(response.status_code, status_code)
+        if status_code == status.HTTP_200_OK:
+            self.login(sales_contact.user.username, new_password)
 
     @pytest.mark.order(4)
     @pytest.mark.django_db
@@ -156,7 +161,7 @@ class SalesContactViewTest(LoginInterface):
                 SalesContact.objects.get(pk=pk)
 
 
-class SupportContactViewTest(LoginInterface):
+class SupportContactViewTest(TestCase, LoginInterface):
 
     fixtures = ['contenttype.json', 'group.json', 'permission.json', 'user.json', 'salescontact.json', 'staffcontact.json', 'supportcontact.json']
 
@@ -185,23 +190,23 @@ class SupportContactViewTest(LoginInterface):
     def test_add_supportcontact(self, username, password, status_code):
         self.login(username, password)
         url = '/supportcontacts/'
-        data = {'username': "support_contact_02", 'password': "N3wpolo6"}
+        data = {'user': {'username': "support_contact_02", 'password': "N3wpolo6"}}
         response = self.client.post(url, data, content_type='application/json')
         self.assertEqual(response.status_code, status_code)
 
     @pytest.mark.order(3)
     @pytest.mark.django_db
     @parameterized.expand([
-        ('sales_contact_01', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
-        ('support_contact_01', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
-        ('staff_contact_01', 'N3wpolo6', 1, status.HTTP_200_OK),
-        ('anonymous_user', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
+        ('sales_contact_01', 'N3wpolo6', 'C1troenC4', 1, status.HTTP_403_FORBIDDEN),
+        ('support_contact_01', 'N3wpolo6', 'C1troenC4', 1, status.HTTP_403_FORBIDDEN),
+        ('staff_contact_01', 'N3wpolo6', 'C1troenC4', 1, status.HTTP_200_OK),
+        ('anonymous_user', 'N3wpolo6', 'C1troenC4', 1, status.HTTP_403_FORBIDDEN),
     ])
-    def test_change_supportcontact(self, username, password, pk, status_code):
+    def test_change_supportcontact(self, username, password, new_password, pk, status_code):
         self.login(username, password)
         url = f'/supportcontacts/{pk}/'
         support_contact = SupportContact.objects.get(pk=pk)
-        data = SupportContactSerializer(support_contact).data
+        data = {'user': {'username': support_contact.user.username, 'password': new_password}}
         response = self.client.put(url, data, content_type='application/json')
         self.assertEqual(response.status_code, status_code)
 
@@ -225,7 +230,7 @@ class SupportContactViewTest(LoginInterface):
                 SupportContact.objects.get(pk=pk)
 
 
-class StaffContactViewTest(LoginInterface):
+class StaffContactViewTest(TestCase, LoginInterface):
 
     fixtures = ['contenttype.json', 'group.json', 'permission.json', 'user.json', 'salescontact.json', 'staffcontact.json', 'supportcontact.json']
 
@@ -254,23 +259,23 @@ class StaffContactViewTest(LoginInterface):
     def test_add_staffcontact(self, username, password, status_code):
         self.login(username, password)
         url = '/staffcontacts/'
-        data = {'username': "staff_contact_02", 'password': "N3wpolo6"}
+        data = {'user': {'username': "staff_contact_02", 'password': "N3wpolo6"}}
         response = self.client.post(url, data, content_type='application/json')
         self.assertEqual(response.status_code, status_code)
 
     @pytest.mark.order(3)
     @pytest.mark.django_db
     @parameterized.expand([
-        ('sales_contact_01', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
-        ('support_contact_01', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
-        ('staff_contact_01', 'N3wpolo6', 1, status.HTTP_200_OK),
-        ('anonymous_user', 'N3wpolo6', 1, status.HTTP_403_FORBIDDEN),
+        ('sales_contact_01', 'N3wpolo6', 'C1troenC5', 1, status.HTTP_403_FORBIDDEN),
+        ('support_contact_01', 'N3wpolo6', 'C1troenC5', 1, status.HTTP_403_FORBIDDEN),
+        ('staff_contact_01', 'N3wpolo6',  'C1troenC5', 1, status.HTTP_200_OK),
+        ('anonymous_user', 'N3wpolo6', 'C1troenC5', 1, status.HTTP_403_FORBIDDEN),
     ])
-    def test_change_staffcontact(self, username, password, pk, status_code):
+    def test_change_staffcontact(self, username, password, new_password, pk, status_code):
         self.login(username, password)
         url = f'/staffcontacts/{pk}/'
         staff_contact = StaffContact.objects.get(pk=pk)
-        data = StaffContactSerializer(staff_contact).data
+        data = {'user': {'username': staff_contact.user.username,'password': new_password}}
         response = self.client.put(url, data, content_type='application/json')
         self.assertEqual(response.status_code, status_code)
 
@@ -294,7 +299,7 @@ class StaffContactViewTest(LoginInterface):
                 StaffContact.objects.get(pk=pk)
 
 
-class ClientViewTest(LoginInterface):
+class ClientViewTest(TestCase, LoginInterface):
 
     fixtures = ['contenttype.json', 'group.json', 'permission.json', 'user.json', 'salescontact.json', 'staffcontact.json', 'supportcontact.json', 'client.json']
 
@@ -372,7 +377,7 @@ class ClientViewTest(LoginInterface):
                 Client.objects.get(pk=pk)
 
 
-class ContractViewTest(LoginInterface):
+class ContractViewTest(TestCase, LoginInterface):
 
     fixtures = ['contenttype.json', 'group.json', 'permission.json', 'user.json', 'salescontact.json', 'staffcontact.json', 'supportcontact.json', 'client.json', 'contract.json']
 
@@ -451,7 +456,8 @@ class ContractViewTest(LoginInterface):
                 Contract.objects.get(pk=pk)
 
 
-class EventViewTest(LoginInterface):
+
+class EventViewTest(TestCase, LoginInterface):
 
     fixtures = ['contenttype.json', 'group.json', 'permission.json', 'eventstatus.json',  'user.json', 'salescontact.json', 'staffcontact.json', 'supportcontact.json', 'client.json', 'contract.json', 'event.json']
 
@@ -492,24 +498,24 @@ class EventViewTest(LoginInterface):
     @pytest.mark.order(3)
     @pytest.mark.django_db
     @parameterized.expand([
-        ('sales_contact_01', 'N3wpolo6', 1, "P", 200, 'new notes', '2021-12-15 00:00:00.000+00:00', status.HTTP_403_FORBIDDEN),
-        ('support_contact_01', 'N3wpolo6', 1,  "E", 300, '', '2021-12-15 00:00:00.000+00:00', status.HTTP_200_OK),
-        ('staff_contact_01', 'N3wpolo6', 1, "P", 500, 'event in progress', '2021-12-30 00:00:00.000+00:00', status.HTTP_200_OK),
-        ('anonymous_user', 'N3wpolo6', 1, "E", 200, '', '2021-12-15 00:00:00.000+00:00', status.HTTP_403_FORBIDDEN),
+        ('sales_contact_01', 'N3wpolo6', 1, "IN PROGRESS", 200, 'new notes', '2021-12-15 00:00:00.000+00:00', status.HTTP_403_FORBIDDEN),
+        ('support_contact_01', 'N3wpolo6', 1,  "ENDED", 300, '', '2021-12-15 00:00:00.000+00:00', status.HTTP_200_OK),
+        ('staff_contact_01', 'N3wpolo6', 1, "IN PROGRESS", 500, 'event in progress', '2021-12-30 00:00:00.000+00:00', status.HTTP_200_OK),
+        ('anonymous_user', 'N3wpolo6', 1, "ENDED", 200, '', '2021-12-15 00:00:00.000+00:00', status.HTTP_403_FORBIDDEN),
     ])
-    def test_change_event(self, username, password, pk, new_status, new_attendees, new_notes, new_date_iso, status_code):
+    def test_change_event(self, username, password, pk, new_event_status, new_attendees, new_notes, new_date_iso, status_code):
         self.login(username,password)
         url = f'/events/{pk}/'
         event = Event.objects.get(pk=pk)
         data = EventSerializer(event).data
-        data['event_status_id'] = EventStatus.objects.get(status=new_status).id
+        data['event_status'] = {'status': new_event_status}
         data['attendees'] = new_attendees
         data['notes'] = new_notes
         data['event_date'] = datetime.fromisoformat(new_date_iso)
         response = self.client.put(url, data, content_type='application/json')
         self.assertEqual(response.status_code, status_code)
         if status_code == status.HTTP_200_OK:
-            self.assertEqual(response.data['event_status_id'], EventStatus.objects.get(status=new_status).id)
+            self.assertEqual(response.data['event_status']['status'], new_event_status)
             self.assertEqual(int(response.data['attendees']), new_attendees)
             self.assertEqual(response.data['notes'], new_notes)
             self.assertEqual(datetime.fromisoformat(response.data['event_date']), datetime.fromisoformat(new_date_iso))

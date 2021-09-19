@@ -19,7 +19,7 @@ class SalesContact(models.Model):
         self, force_insert=False, force_update=False, using=None, update_fields=None
     ):
         """
-        Overrides save method to save user instance and set user in SALES Group
+        Overrides save method to save user instance and set user in STAFF Group
         """
         self.user.save(
             force_insert=False, force_update=False, using=None, update_fields=None

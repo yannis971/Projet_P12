@@ -2,61 +2,94 @@ from django.shortcuts import get_object_or_404
 
 from rest_framework import serializers
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
 from crm_api.models import (Client, Contract, Event, EventStatus,
                             SalesContact, StaffContact, SupportContact)
+
+
+class GroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = ['name',]
 
 
 class UserSerializer(serializers.ModelSerializer):
     """
     User serializer
     """
+    groups = serializers.SlugRelatedField(
+        many=True,
+        read_only=True,
+        slug_field='name',
+    )
+
     class Meta:
         model = User
-        fields = ['username', 'password']
+        fields = ['username', 'password', 'groups']
 
 
 class SalesContactSerializer(serializers.ModelSerializer):
-    user_id = serializers.ReadOnlyField(source='user.id')
-    username = serializers.ReadOnlyField(source='user.username')
-    password = serializers.ReadOnlyField(source='user.password')
+    user = UserSerializer(many=False)
 
     class Meta:
-        model = SupportContact
-        fields = ['user_id', 'username', 'password']
+        model = SalesContact
+        fields = '__all__'
 
-    def save(self, **kwargs):
-        the_user = get_object_or_404(User, pk=self._kwargs['data']['user_id'])
-        return super().save(user=the_user)
+    def create(self, validated_data):
+        user_data = validated_data.pop('user', None)
+        user = User.objects.create_user(**user_data)
+        return SalesContact.objects.create(user=user)
+
+    def update(self, instance, validated_data):
+        user_data = validated_data.pop('user')
+        user_instance = User.objects.get(username=user_data['username'])
+        user_instance.set_password(user_data['password'])
+        user_instance.save()
+        instance.user = user_instance
+        return instance
 
 
 class SupportContactSerializer(serializers.ModelSerializer):
-    user_id = serializers.ReadOnlyField(source='user.id')
-    username = serializers.ReadOnlyField(source='user.username')
-    password = serializers.ReadOnlyField(source='user.password')
+    user = UserSerializer(many=False)
 
     class Meta:
         model = SupportContact
-        fields = ['user_id', 'username', 'password']
+        fields = '__all__'
 
-    def save(self, **kwargs):
-        the_user = get_object_or_404(User, pk=self._kwargs['data']['user_id'])
-        return super().save(user=the_user)
+    def create(self, validated_data):
+        user_data = validated_data.pop('user', None)
+        user = User.objects.create_user(**user_data)
+        return SupportContact.objects.create(user=user)
+
+    def update(self, instance, validated_data):
+        user_data = validated_data.pop('user')
+        user_instance = User.objects.get(username=user_data['username'])
+        user_instance.set_password(user_data['password'])
+        user_instance.save()
+        instance.user = user_instance
+        return instance
 
 
 class StaffContactSerializer(serializers.ModelSerializer):
-    user_id = serializers.ReadOnlyField(source='user.id')
-    username = serializers.ReadOnlyField(source='user.username')
-    password = serializers.ReadOnlyField(source='user.password')
+    user = UserSerializer(many=False)
 
     class Meta:
         model = StaffContact
-        fields = ['user_id', 'username', 'password']
+        fields = '__all__'
 
-    def save(self, **kwargs):
-        the_user = get_object_or_404(User, pk=self._kwargs['data']['user_id'])
-        return super().save(user=the_user)
+    def create(self, validated_data):
+        user_data = validated_data.pop('user', None)
+        user = User.objects.create_user(**user_data)
+        return StaffContact.objects.create(user=user)
+
+    def update(self, instance, validated_data):
+        user_data = validated_data.pop('user')
+        user_instance = User.objects.get(username=user_data['username'])
+        user_instance.set_password(user_data['password'])
+        user_instance.save()
+        instance.user = user_instance
+        return instance
 
 
 class ClientSerializer(serializers.ModelSerializer):
@@ -91,15 +124,24 @@ class ContractSerializer(serializers.ModelSerializer):
         exclude = ['sales_contact', 'client']
 
     def validate(self, data):
-        if 'sales_contact_id' not in self._kwargs['data'] or 'client_id' not in self._kwargs['data']:
-            raise serializers.ValidationError(detail="sales_contact_id and client_id are required in data",
-                                              code='invalid')
+        if 'sales_contact_id' not in self._kwargs['data']:
+            raise serializers.ValidationError(detail="sales_contact_id is required in data", code='invalid')
+        elif 'client_id' not in self._kwargs['data']:
+            raise serializers.ValidationError(detail="client_id is required in data", code='invalid')
         return data
 
     def save(self, **kwargs):
         the_sales_contact = get_object_or_404(SalesContact, pk=self._kwargs['data']['sales_contact_id'])
         the_client = get_object_or_404(Client, pk=self._kwargs['data']['client_id'])
         return super().save(sales_contact=the_sales_contact, client=the_client)
+
+
+class EventStatusSerializer(serializers.ModelSerializer):
+    status = serializers.CharField(source='get_status_display')
+
+    class Meta:
+        model = EventStatus
+        fields = ['status']
 
 
 class EventSerializer(serializers.ModelSerializer):
@@ -109,12 +151,12 @@ class EventSerializer(serializers.ModelSerializer):
     support_contact_id = serializers.ReadOnlyField(source='support_contact.id')
     client_id = serializers.ReadOnlyField(source='client.id')
     event_status_id = serializers.ReadOnlyField(source='event_status.id')
-    event_status_value = serializers.ReadOnlyField(source='event_status.status')
+    event_status = EventStatusSerializer(many=False, read_only=True)
 
     class Meta:
         model = Event
-        fields = ['id', 'client_id', 'support_contact_id',
-                  'event_status_id', 'event_status_value', 'attendees', 'event_date', 'notes', 'date_created', 'date_updated']
+        fields = ['id', 'client_id', 'support_contact_id', 'event_status_id', 'event_status',
+                  'attendees', 'event_date', 'notes', 'date_created', 'date_updated']
 
     def validate(self, data):
         if 'support_contact_id' not in self._kwargs['data'] \
