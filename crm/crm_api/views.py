@@ -42,7 +42,7 @@ from crm_api.models import SalesContact, SupportContact, StaffContact, Client, C
 
 
 from crm_api.decorators import route_permissions
-
+from crm_api.permissions import ContractPermission
 from crm_api.filters import ClientFilter, ContractFilter, EventFilter
 from crm_api.serializers import ClientSerializer, ContractSerializer, EventSerializer, UserSerializer, SalesContactSerializer, SupportContactSerializer, StaffContactSerializer, User
 
@@ -320,6 +320,7 @@ class ContractViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
     """
     queryset = Contract.objects.all()
     serializer_class = ContractSerializer
+    permission_classes = [ContractPermission,]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, ContractFilter]
     filterset_fields = ['sales_contact', 'client']
     redirect_field_name = None
@@ -341,12 +342,10 @@ class ContractViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
 
-    @route_permissions('crm_api.change_contract')
     def update(self, request, *args, **kwargs):
         self._prepare_update_contract(request)
         return super().update(request, *args, **kwargs)
 
-    @route_permissions('crm_api.change_contract')
     def partial_update(self, request, *args, **kwargs):
         self._prepare_update_contract(request)
         return super().partial_update(request, *args, **kwargs)

@@ -2,6 +2,7 @@ import django_filters
 from django.db.models import Q
 from crm_api.models import SalesContact, StaffContact,SupportContact,Client,Contract,Event
 from rest_framework.filters import BaseFilterBackend
+from rest_framework.exceptions import PermissionDenied
 
 
 class Profile:
@@ -48,12 +49,18 @@ class Profile:
     def is_support(self):
         return self._is_support
 
+    @property
+    def is_anonymous(self):
+        return not(self._is_sales or self._is_staff or self.is_support)
+
 
 class ClientFilter(BaseFilterBackend):
 
     def filter_queryset(self, request, queryset, view=None):
         the_profile = Profile(request)
-        if the_profile.is_staff:
+        if the_profile.is_anonymous:
+            raise PermissionDenied
+        elif the_profile.is_staff:
             # liste de tous les clients
             return queryset.order_by('id')
         elif the_profile.is_sales:
@@ -82,15 +89,17 @@ class ContractFilter(BaseFilterBackend):
                               Client.objects.filter(sales_contact=the_profile.sales_contact).values('id')]
             return queryset.filter(Q(sales_contact=the_profile.sales_contact) | Q(client_id__in=list_client_id)).order_by('id')
         else:
-            # queryset vide
-            return Contract.objects.none()
+            # les autres profils n'ont pas accès aux contrats
+            raise PermissionDenied
 
 
 class EventFilter(BaseFilterBackend):
 
     def filter_queryset(self, request, queryset, view=None):
         the_profile = Profile(request)
-        if the_profile.is_staff:
+        if the_profile.is_anonymous:
+            raise PermissionDenied
+        elif the_profile.is_staff:
             # liste de tous les événements
             return queryset.order_by('id')
         elif the_profile.is_sales:

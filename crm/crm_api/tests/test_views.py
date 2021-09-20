@@ -456,7 +456,6 @@ class ContractViewTest(TestCase, LoginInterface):
                 Contract.objects.get(pk=pk)
 
 
-
 class EventViewTest(TestCase, LoginInterface):
 
     fixtures = ['contenttype.json', 'group.json', 'permission.json', 'eventstatus.json',  'user.json', 'salescontact.json', 'staffcontact.json', 'supportcontact.json', 'client.json', 'contract.json', 'event.json']
