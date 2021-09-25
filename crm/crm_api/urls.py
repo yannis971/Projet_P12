@@ -32,7 +32,6 @@ router.register(r"events",
 urlpatterns = [
     path("api/login/", views.LoginView.as_view(), name="api-login"),
     path("api/logout/", views.LogoutView.as_view(), name="api-logout"),
-    path("home/", views.home, name="home"),
     path(
         "login/",
         auth_views.LoginView.as_view(template_name="crm_admin/login.html"),

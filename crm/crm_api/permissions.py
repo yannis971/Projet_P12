@@ -21,7 +21,7 @@ class ContractPermission(permissions.BasePermission):
         """
         Returns True if user has change_contract_status only
         """
-        amount = 0.00
+        amount = -1.00
         try:
             amount = float(request.data["amount"])
         except ValueError:

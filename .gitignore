@@ -1,7 +1,7 @@
 crm/.coverage
+crm/crm_api/.coverage
 .idea/
 env/
-crm/htmlcov/
 crm/*/__pycache__/
 crm/*/*/__pycache__/
 crm/crm_api/logs/*.log

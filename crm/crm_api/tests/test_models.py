@@ -13,26 +13,26 @@ class SalesContactModelTest(TestCase):
     @pytest.mark.django_db
     def setUpTestData(cls):
         Group.objects.create(name="SALES")
-        SalesContact.objects.create(
+        cls._sales_contact = SalesContact.objects.create(
             user=User(username="test_sales_contact", password="test")
         )
 
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_create(self):
-        sales_contact = SalesContact.objects.get(pk=1)
+        sales_contact = SalesContact.objects.get(pk=self._sales_contact.id)
         assert isinstance(sales_contact, SalesContact)
 
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_str(self):
-        sales_contact = SalesContact.objects.get(pk=1)
+        sales_contact = SalesContact.objects.get(pk=self._sales_contact.id)
         assert sales_contact.__str__() == "test_sales_contact"
 
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_group(self):
-        sales_contact = SalesContact.objects.get(pk=1)
+        sales_contact = SalesContact.objects.get(pk=self._sales_contact.id)
         assert sales_contact.user.groups.all()[0].name == "SALES"
 
 
@@ -41,26 +41,26 @@ class SupportContactModelTest(TestCase):
     @pytest.mark.django_db
     def setUpTestData(cls):
         Group.objects.create(name="SUPPORT")
-        SupportContact.objects.create(
+        cls._support_contact= SupportContact.objects.create(
             user=User(username="test_support_contact", password="test")
         )
 
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_create(self):
-        support_contact = SupportContact.objects.get(pk=1)
+        support_contact = SupportContact.objects.get(pk=self._support_contact.id)
         assert isinstance(support_contact, SupportContact)
 
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_str(self):
-        support_contact = SupportContact.objects.get(pk=1)
+        support_contact = SupportContact.objects.get(pk=self._support_contact.id)
         assert support_contact.__str__() == "test_support_contact"
 
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_group(self):
-        support_contact = SupportContact.objects.get(pk=1)
+        support_contact = SupportContact.objects.get(pk=self._support_contact.id)
         assert support_contact.user.groups.all()[0].name == "SUPPORT"
 
 
@@ -69,26 +69,26 @@ class StaffContactModelTest(TestCase):
     @pytest.mark.django_db
     def setUpTestData(cls):
         Group.objects.create(name="STAFF")
-        StaffContact.objects.create(
+        cls._staff_contact = StaffContact.objects.create(
             user=User(username="test_staff_contact", password="test")
         )
 
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_create(self):
-        staff_contact = StaffContact.objects.get(pk=1)
+        staff_contact = StaffContact.objects.get(pk=self._staff_contact.id)
         assert isinstance(staff_contact, StaffContact)
 
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_str(self):
-        staff_contact = StaffContact.objects.get(pk=1)
+        staff_contact = StaffContact.objects.get(pk=self._staff_contact.id)
         assert staff_contact.__str__() == "test_staff_contact"
 
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_group(self):
-        staff_contact = StaffContact.objects.get(pk=1)
+        staff_contact = StaffContact.objects.get(pk=self._staff_contact.id)
         assert staff_contact.user.groups.all()[0].name == "STAFF"
 
 
@@ -114,6 +114,7 @@ class ClientModelTest(TestCase):
 
 
 class ContractModelTest(TestCase):
+
     @classmethod
     @pytest.mark.django_db
     def setUpTestData(cls):
@@ -128,7 +129,7 @@ class ContractModelTest(TestCase):
             sales_contact=sales_contact,
         )
         date_iso = "2021-12-01 00:00:00.000+00:00"
-        Contract.objects.create(
+        cls._contract = Contract.objects.create(
             sales_contact=sales_contact,
             client=client,
             status=True,
@@ -139,13 +140,13 @@ class ContractModelTest(TestCase):
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_create_contract(self):
-        contract = Contract.objects.get(pk=1)
+        contract = Contract.objects.get(pk=ContractModelTest._contract.id)
         assert isinstance(contract, Contract)
 
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_contract_str(self):
-        contract = Contract.objects.get(pk=1)
+        contract = Contract.objects.get(pk=ContractModelTest._contract.id)
         expected_str_01 = "test client | test_sales_contact | True | 1000.00 |"
         expected_str_02 = " 2021-12-01 00:00:00+00:00"
         assert (
@@ -197,7 +198,7 @@ class EventModelTest(TestCase):
         support_contact = SupportContact.objects.create(
             user=User(username="test_support_contact", password="test")
         )
-        Event.objects.create(
+        cls._event = Event.objects.create(
             support_contact=support_contact,
             client=client,
             event_status=EventStatus.objects.get(status="C"),
@@ -209,13 +210,13 @@ class EventModelTest(TestCase):
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_create_event(self):
-        event = Event.objects.get(pk=1)
+        event = Event.objects.get(pk=self._event.id)
         assert isinstance(event, Event)
 
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_event_str(self):
-        event = Event.objects.get(pk=1)
+        event = Event.objects.get(pk=self._event.id)
         expected_str_01 = "test client | test_support_contact | CREATED |"
         expected_str_02 = " 100 | 2021-12-01 00:00:00+00:00"
         assert (

@@ -3,10 +3,9 @@
 import logging
 
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core import management
-from django.shortcuts import render
+
 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics, status, viewsets
@@ -43,18 +42,6 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
     """
     def enforce_csrf(self, request):
         return
-
-
-@login_required
-def home(request):
-    """
-    home view
-    """
-    context = {
-        "welcome": f"Welcome to your dashboard, {request.user.username} !",
-        "permissions": request.user.get_all_permissions(),
-    }
-    return render(request, "crm_api/home.html", context=context)
 
 
 class LoginView(generics.GenericAPIView):
@@ -441,4 +428,4 @@ class InitDataBaseView(generics.GenericAPIView):
 
             return Response(res, status=status.HTTP_200_OK)
         else:
-            return Response({}, status=status.HTTP_403_FORBIDDEN)
+            return Response({}, status=status.HTTP_401_UNAUTHORIZED)
