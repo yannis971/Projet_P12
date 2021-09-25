@@ -1,0 +1,16 @@
+[
+{
+    "model": "crm_api.staffcontact",
+    "pk": 1,
+    "fields": {
+        "user": 3
+    }
+},
+{
+    "model": "crm_api.staffcontact",
+    "pk": 2,
+    "fields": {
+        "user": 7
+    }
+}
+]

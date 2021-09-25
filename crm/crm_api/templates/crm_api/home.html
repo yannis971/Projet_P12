@@ -1,0 +1,14 @@
+{% extends "crm_api/base.html" %}
+{% block title %}Dashboard{% endblock title %}
+{% block content %}
+<h1>{{welcome}}</h1>
+<br>
+{% if permissions %}
+<ul>
+    {% for item in permissions %}
+        <li>{{ item }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+<hr>
+{% endblock content %}

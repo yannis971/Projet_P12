@@ -1,0 +1,23 @@
+[
+{
+    "model": "crm_api.eventstatus",
+    "pk": 1,
+    "fields": {
+        "status": "C"
+    }
+},
+{
+    "model": "crm_api.eventstatus",
+    "pk": 2,
+    "fields": {
+        "status": "E"
+    }
+},
+{
+    "model": "crm_api.eventstatus",
+    "pk": 3,
+    "fields": {
+        "status": "P"
+    }
+}
+]
