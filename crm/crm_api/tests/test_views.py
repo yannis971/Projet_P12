@@ -13,7 +13,7 @@ class LoginInterface:
 
     @pytest.mark.django_db
     def login(self, username, password):
-        url = '/login/'
+        url = '/api/login/'
         data = {'username': username, 'password': password}
         response = self.client.post(url, data, content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -38,7 +38,7 @@ class LoginViewTest(TestCase):
         ('test_user', 'N3wpolo6', status.HTTP_200_OK),
     ])
     def test_login(self, username, password, status_code):
-        url = '/login/'
+        url = '/api/login/'
         data = {'username': username, 'password': password}
         response = self.client.post(url, data, content_type='application/json')
         self.assertEqual(response.status_code, status_code)
@@ -46,7 +46,7 @@ class LoginViewTest(TestCase):
             self.assertIn('token', response.data)
 
     def test_get_method(self):
-        url = '/login/'
+        url = '/api/login/'
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -56,7 +56,7 @@ class LoginViewTest(TestCase):
         ("put",),
     ])
     def test_method_not_allowed(self, method):
-        url = '/login/'
+        url = '/api/login/'
         response = getattr(self.client, method)(url)
         """
         if method == "delete":
@@ -80,11 +80,11 @@ class LogoutViewTest(TestCase):
         )
 
     def test_login_logout(self):
-        url = '/login/'
+        url = '/api/login/'
         data = {'username': 'test_user', 'password': 'test'}
         response = self.client.post(url, data, content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        url = '/logout/'
+        url = '/api/logout/'
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['message'], "Your are now logged out")

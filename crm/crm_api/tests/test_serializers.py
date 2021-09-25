@@ -253,10 +253,7 @@ class TestSalesContactSerializer:
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialized_data(self):
-        valid_serialized_data = factory.build(
-            dict,
-            FACTORY_CLASS=SalesContactFactory
-        )
+        valid_serialized_data = {'user': {'username': "testsalescontact", 'password': "test", 'groups': [{'name': 'SALES'}, ]}}
         serializer = SalesContactSerializer(data=valid_serialized_data)
 
         assert serializer.is_valid()
@@ -275,10 +272,7 @@ class TestSupportContactSerializer(TestCase):
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialized_data(self):
-        valid_serialized_data = factory.build(
-            dict,
-            FACTORY_CLASS=SupportContactFactory
-        )
+        valid_serialized_data = {'user': {'username': "testsupportcontact", 'password': "test", 'groups': [{'name': 'SUPPORT'}, ]}}
         serializer = SupportContactSerializer(data=valid_serialized_data)
 
         assert serializer.is_valid()
@@ -297,10 +291,7 @@ class TestStaffContactSerializer(TestCase):
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialized_data(self):
-        valid_serialized_data = factory.build(
-            dict,
-            FACTORY_CLASS=StaffContactFactory
-        )
+        valid_serialized_data = {'user': {'username': "teststaffcontact",'password': "test", 'groups': [{'name': 'SUPPORT'}, ]}}
         serializer = StaffContactSerializer(data=valid_serialized_data)
 
         assert serializer.is_valid()

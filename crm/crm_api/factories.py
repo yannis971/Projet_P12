@@ -1,16 +1,29 @@
+"""
+Module factories
+"""
 from datetime import timedelta
 
 import factory
+from django.contrib.auth.models import User
 from django.utils import timezone
 
-from django.contrib.auth.models import User
-
-from crm_api.models import (Client, Contract, Event, EventStatus, SalesContact,
-                            StaffContact, SupportContact)
+from crm_api.models import (
+    Client,
+    Contract,
+    Event,
+    EventStatus,
+    SalesContact,
+    StaffContact,
+    SupportContact,
+)
 
 
 class UserFactory(factory.Factory):
+    """
+    class UserFactory
+    """
     class Meta:
+        """ MetaClass with model"""
         model = User
 
     username = "testuser"
@@ -18,32 +31,44 @@ class UserFactory(factory.Factory):
 
 
 class SalesContactFactory(factory.Factory):
+    """
+    class SalesContactFactory
+    """
     class Meta:
+        """ MetaClass with model"""
         model = SalesContact
 
-
     user = User(username="testsalescontact", password="test")
-    user_id = user.id
 
 
 class SupportContactFactory(factory.Factory):
+    """
+    class SupportContactFactory
+    """
     class Meta:
+        """ MetaClass with model"""
         model = SupportContact
 
     user = User(username="testsupportcontact", password="test")
-    user_id = user.id
 
 
 class StaffContactFactory(factory.Factory):
+    """
+    class StaffContactFactory
+    """
     class Meta:
+        """ MetaClass with model"""
         model = StaffContact
 
     user = User(username="teststaffcontact", password="test")
-    user_id = user.id
 
 
 class ClientFactory(factory.Factory):
+    """
+    class ClientFactory
+    """
     class Meta:
+        """ MetaClass with model"""
         model = Client
 
     first_name = "Test"
@@ -56,7 +81,11 @@ class ClientFactory(factory.Factory):
 
 
 class ContractFactory(factory.Factory):
+    """
+    class ContractFactory
+    """
     class Meta:
+        """ MetaClass with model"""
         model = Contract
 
     status = True
@@ -69,14 +98,22 @@ class ContractFactory(factory.Factory):
 
 
 class EventStatusFactory(factory.Factory):
+    """
+    class EventStatusFactory
+    """
     class Meta:
+        """ MetaClass with model"""
         model = EventStatus
 
     status = EventStatus.Status.CREATED
 
 
 class EventFactory(factory.Factory):
+    """
+    class EventFactory
+    """
     class Meta:
+        """ MetaClass with model"""
         model = Event
 
     client = factory.SubFactory(ClientFactory)
