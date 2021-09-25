@@ -1,10 +1,10 @@
+"""
+Module test_serializers.py
+"""
 from datetime import timedelta
 
 import factory
 import pytest
-from django.test import TestCase
-from django.utils import timezone
-
 from crm_api.factories import (ClientFactory, ContractFactory, EventFactory,
                                SalesContactFactory, StaffContactFactory,
                                SupportContactFactory, UserFactory)
@@ -12,9 +12,14 @@ from crm_api.serializers import (ClientSerializer, ContractSerializer,
                                  EventSerializer, SalesContactSerializer,
                                  StaffContactSerializer,
                                  SupportContactSerializer, UserSerializer)
+from django.test import TestCase
+from django.utils import timezone
 
 
 class TestClientSerializer(TestCase):
+    """
+    TestCase for testing ClientSerializer
+    """
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialize_model(self):
@@ -26,7 +31,9 @@ class TestClientSerializer(TestCase):
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialized_data(self):
-        valid_serialized_data = factory.build(dict, FACTORY_CLASS=ClientFactory)
+        valid_serialized_data = factory.build(
+            dict, FACTORY_CLASS=ClientFactory
+        )
         serializer = ClientSerializer(data=valid_serialized_data)
 
         assert serializer.is_valid()
@@ -81,6 +88,9 @@ class TestClientSerializer(TestCase):
 
 
 class TestContractSerializer(TestCase):
+    """
+    TestCase for testing ContractSerializer
+    """
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialize_model(self):
@@ -92,7 +102,10 @@ class TestContractSerializer(TestCase):
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialized_data(self):
-        valid_serialized_data = factory.build(dict, FACTORY_CLASS=ContractFactory)
+        valid_serialized_data = factory.build(
+            dict,
+            FACTORY_CLASS=ContractFactory
+        )
         serializer = ContractSerializer(data=valid_serialized_data)
 
         assert serializer.is_valid()
@@ -152,6 +165,9 @@ class TestContractSerializer(TestCase):
 
 
 class TestEventSerializer(TestCase):
+    """
+    TestCase for testing EventSerializer
+    """
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialize_model(self):
@@ -223,6 +239,9 @@ class TestEventSerializer(TestCase):
 
 
 class TestUserSerializer(TestCase):
+    """
+    TestCase for testing UserSerializer
+    """
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialize_model(self):
@@ -242,6 +261,9 @@ class TestUserSerializer(TestCase):
 
 
 class TestSalesContactSerializer:
+    """
+    TestCase for testing SalesContactSerializer
+    """
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialize_model(self):
@@ -253,7 +275,15 @@ class TestSalesContactSerializer:
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialized_data(self):
-        valid_serialized_data = {'user': {'username': "testsalescontact", 'password': "test", 'groups': [{'name': 'SALES'}, ]}}
+        valid_serialized_data = {
+            "user": {
+                "username": "testsalescontact",
+                "password": "test",
+                "groups": [
+                    {"name": "SALES"},
+                ],
+            }
+        }
         serializer = SalesContactSerializer(data=valid_serialized_data)
 
         assert serializer.is_valid()
@@ -261,6 +291,9 @@ class TestSalesContactSerializer:
 
 
 class TestSupportContactSerializer(TestCase):
+    """
+    TestCase for testing SupportContactSerializer
+    """
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialize_model(self):
@@ -272,7 +305,15 @@ class TestSupportContactSerializer(TestCase):
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialized_data(self):
-        valid_serialized_data = {'user': {'username': "testsupportcontact", 'password': "test", 'groups': [{'name': 'SUPPORT'}, ]}}
+        valid_serialized_data = {
+            "user": {
+                "username": "testsupportcontact",
+                "password": "test",
+                "groups": [
+                    {"name": "SUPPORT"},
+                ],
+            }
+        }
         serializer = SupportContactSerializer(data=valid_serialized_data)
 
         assert serializer.is_valid()
@@ -280,6 +321,9 @@ class TestSupportContactSerializer(TestCase):
 
 
 class TestStaffContactSerializer(TestCase):
+    """
+    TestCase for testing StaffContactSerializer
+    """
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialize_model(self):
@@ -291,7 +335,15 @@ class TestStaffContactSerializer(TestCase):
     @pytest.mark.unit
     @pytest.mark.django_db
     def test_serialized_data(self):
-        valid_serialized_data = {'user': {'username': "teststaffcontact",'password': "test", 'groups': [{'name': 'SUPPORT'}, ]}}
+        valid_serialized_data = {
+            "user": {
+                "username": "teststaffcontact",
+                "password": "test",
+                "groups": [
+                    {"name": "SUPPORT"},
+                ],
+            }
+        }
         serializer = StaffContactSerializer(data=valid_serialized_data)
 
         assert serializer.is_valid()
