@@ -111,6 +111,11 @@ Toujours à la racine du projet, lancer l'une des 2 commandes suivantes :
 
 `python3 -m pip install -r requirements.txt`
 
+Pour le système d'exploitation Windows, installer les dépendances du projet à partir du fichier `requirements_windows.txt` en éxécutant la commande :
+
+`pip install - requirements_windows.txt`
+
+
 ### 4) Création et initialisation de la base de données
 
 #### 4.1) Installation de PostgresSQL
@@ -211,7 +216,7 @@ Une fois l'environnement virtuel activé et les dépendances du projet Projet_P1
 
 `python manage.py runserver`
 
-4 collections sont à disposition dans Postaman via les liens ci-dessous.
+4 collections sont à disposition dans **Postman** via les liens ci-dessous.
 
 Collection crm_api_salescontact (parcours utilisateur d'un membre de l'équipe de vente)
 
@@ -225,7 +230,7 @@ Collection crm_api_staffcontact (parcours utilisateur d'un membre de l'équipe d
 
 https://www.getpostman.com/collections/b5885f4a01afb44557a3
 
-Collection crm_api_anonymous_user (parcours d'un utilsateur anonyme)
+Collection crm_api_anonymous_user (parcours d'un utilisateur anonyme)
 
 https://www.getpostman.com/collections/d3502376bdccd36e4f0e
 
