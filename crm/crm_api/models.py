@@ -29,6 +29,13 @@ class SalesContact(models.Model):
             force_insert=False, force_update=False, using=None, update_fields=None
         )
 
+    def delete(self, using=None, keep_parents=False):
+        """
+        Overrides delete method to first delete user instance
+        """
+        self.user.delete()
+        super().delete()
+
     def __str__(self):
         return self.user.get_username()
 
@@ -56,6 +63,13 @@ class StaffContact(models.Model):
         super().save(
             force_insert=False, force_update=False, using=None, update_fields=None
         )
+
+    def delete(self, using=None, keep_parents=False):
+        """
+        Overrides delete method to first delete user instance
+        """
+        self.user.delete()
+        super().delete()
 
     def __str__(self):
         return self.user.get_username()
@@ -85,6 +99,13 @@ class SupportContact(models.Model):
         super().save(
             force_insert=False, force_update=False, using=None, update_fields=None
         )
+
+    def delete(self, using=None, keep_parents=False):
+        """
+        Overrides delete method to first delete user instance
+        """
+        self.user.delete()
+        super().delete()
 
     def __str__(self):
         return self.user.get_username()
