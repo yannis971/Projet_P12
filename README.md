@@ -166,29 +166,31 @@ Puis, déplacez-vous dans le répertoire projet `crm` et lancer la migration en 
 
 Les étapes pour initialiser la base de données
 
-Supprimer le contenu des tables
+1) Supprimer le contenu des tables
 
 `python manage.py initdatabase`
 
 ![](images/initdatabase.png)
 
-Réinitialiser les séquences de clés primaires des tables du domaine `auth`
+2) Réinitialiser les séquences de clés primaires des tables du domaine `auth`
 
 `python manage.py sqlsequencereset auth | psql crm`
 
 ![](images/sqlsequencereset_auth.png)
 
-Réinitialiser les séquences de clés primaires des tables du domaine `crm_api`
+3) Réinitialiser les séquences de clés primaires des tables du domaine `crm_api`
 
 `python manage.py sqlsequencereset crm_api | psql crm`
 
 ![](images/sqlsequencereset_crm_api.png)
 
-Charger les données initiales
+4) Charger les données initiales
 
 `python manage.py loaddatabase`
 
 ![](images/loaddatabase.png)
+
+5) Mettre à jour les "fixtures"
 
 **Attention : mettre à jour les instantanés group.json et permission.json**
 
